@@ -286,17 +286,17 @@ In Finder, go to your home folder (you can press `Cmd + Shift + H`) and create a
 
 1. On our GitHub repo page, click the green **< > Code** button.
 2. Click the **SSH** tab.
-3. Copy the URL (it looks like `git@github.com:Klaasompie/Optimization.git`).
+3. Copy the URL (it looks like `git@github.com:omerompie/Optimization.git`).
 4. In your terminal, run `git clone` with that URL:
 
 **Windows:**
 ```powershell
-git clone git@github.com:Klaasompie/Optimization.git
+git clone git@github.com:omerompie/Optimization.git
 ```
 
 **macOS:**
 ```bash
-git clone git@github.com:Klaasompie/Optimization.git
+git clone git@github.com:omerompie/Optimization.git
 ```
 
 This will create a new folder `Optimization` containing all our project files.
