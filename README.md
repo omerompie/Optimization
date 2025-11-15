@@ -146,7 +146,7 @@ cat ~/.ssh/id_ed25519.pub
 
 #### Both Platforms:
 
-4. Go to [github.com](https://github.com) and log in.
+4. Go to [github.com]([https://github.com](https://github.com/settings/keys)) and log in.
 
 5. Click your profile picture (top-right) and go to **Settings**.
 
