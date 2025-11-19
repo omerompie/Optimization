@@ -34,7 +34,7 @@ lefDF = [1.1, 0.95, 0.96, 0.99, 1.2, 1.2, 0.95]
 rigDF = [1.1, 0.9, 0.97, 1, 1.2, 1.2, 0.95]
 
 lon_mid and lat_mid are the coordinates for the reference trajectory
-lon_rig and lat rit are the coordinates for the trajectory at the right
+lon_rig and lat rig are the coordinates for the trajectory at the right
 midDF, leftDF, and rig DF are the distance factores (wind emulation)
 
 
