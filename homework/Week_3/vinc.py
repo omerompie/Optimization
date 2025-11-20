@@ -201,18 +201,18 @@ def v_inverse(lat1,lon1,az12,s):
 # TEST CODE BEGINS HERE
 
 
-
-boston = (42.3541165, -71.0693514)
-newyork = (40.7791472, -73.9680804)
-
-distance,azimuth = v_direct(boston, newyork)  # Meteres, degrees
-print(distance)  # 298396.05747326626 mts
-print(azimuth)   # 235.0838926191198  degrees
-
-# Define a waypoint
-# vinc_in(lat, lon, alpha12, s )
-
-lat2,lon2 = v_inverse(boston[0],boston[1],azimuth,distance)
-print(lat2)     # 40.77914719998252
-print(lon2)     # -73.96808039994268
-
+#
+# boston = (42.3541165, -71.0693514)
+# newyork = (40.7791472, -73.9680804)
+#
+# distance,azimuth = v_direct(boston, newyork)  # Meteres, degrees
+# print(distance)  # 298396.05747326626 mts
+# print(azimuth)   # 235.0838926191198  degrees
+#
+# # Define a waypoint
+# # vinc_in(lat, lon, alpha12, s )
+#
+# lat2,lon2 = v_inverse(boston[0],boston[1],azimuth,distance)
+# print(lat2)     # 40.77914719998252
+# print(lon2)     # -73.96808039994268
+#

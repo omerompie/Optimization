@@ -104,6 +104,7 @@ LAX = (lalaland_lat, lalaland_lon)
 """
 # CODE
 
+"""
 distance = 150 * 1852
 
 
@@ -133,9 +134,9 @@ def plot_waypoints(AMS, points):
     plt.show()
 
 print(placewaypoints(AMS, distance))
-plot_waypoints(AMS, (placewaypoints(AMS, distance)))
-
+plot_waypoints(AMS, (placewaypoints(AMS, distance)))"""
 """
+
 6.- Load the data shown in the introduction  (the 9 lists above)
 """
 
@@ -149,8 +150,8 @@ lon_rig = [4.76, 4.72, 3.55, 2.21, 2.59, 2.73, 2.69]
 lat_rig = [52.30, 52.04, 50.30, 48.39, 46.09, 43.81, 41.88]
 
 #    NO UNITS (Wind Factor)
-midDF = [1.1, 1.2, 1, 0.96, 0.99, 0.98, 0.95]
 lefDF = [1.1, 0.95, 0.96, 0.99, 1.2, 1.2, 0.95]
+midDF = [1.1, 1.2, 1, 0.96, 0.99, 0.98, 0.95]
 rigDF = [1.1, 0.9, 0.97, 1, 1.2, 1.2, 0.95]
 
 
@@ -170,8 +171,35 @@ rigDF = [1.1, 0.9, 0.97, 1, 1.2, 1.2, 0.95]
     Print the result in km and in nautical miles
 
 """
-# CODE
 
+def calculate_distance_left(lat_lef, lon_lef, lefDF):
+    total_distance = 0
+    for i in range(len(lon_lef) - 1 ):
+        #get current point and next point
+        current_point = (lat_lef[i], lon_lef[i])
+        next_point = (lat_lef[i+1], lon_lef[i+1])
+
+        #calculate distance and wind factor
+        raw_distance = v_direct(current_point, next_point)
+        wind = (lefDF[i] + lefDF[i+1]) / 2
+
+        #add distance to total distance and multiply
+        total_distance += raw_distance[0] * wind
+
+    return total_distance
+
+distance_left = calculate_distance_left(lat_lef, lon_lef, lefDF)
+print(f"The distance between left trajectory is: {(distance_left/1000):.2f} km.")
+
+distance_mid = calculate_distance_left(lat_mid, lon_mid, midDF)
+print(f"The distance between middle trajectory is: {(distance_mid/1000):.2f} km.")
+
+distance_rig = calculate_distance_left(lat_rig, lon_rig, rigDF)
+print(f"The distance between right trajectory is: {(distance_rig/1000):.2f} km.")
+
+
+smallest_distance_1 = min(distance_left, distance_mid, distance_rig)
+print(f"The smallest distance between trajectories is: {(smallest_distance_1/1000):.2f} km.")
 
 """
 8.- In this step, a simple greedy optimization algorithm should be applied.
@@ -181,4 +209,44 @@ rigDF = [1.1, 0.9, 0.97, 1, 1.2, 1.2, 0.95]
     This process should be repeated until the aircraft reaches the last waypoint.
     Show this trajectory on a map. You can move along mid, left or right. 
 """
-# CODE
+
+def greedy_optimization(lat_lef, lon_lef, lefDF, lat_mid, lon_mid, midDF, lat_rig, lon_rig, rigDF):
+    current_point = (lat_mid[0], lon_mid[0])
+    optimal_path = [current_point]
+    total_cost = 0
+
+    for i in range(len(lon_lef) - 1 ):
+        target_left = (lat_lef[i+1], lon_lef[i+1])
+        target_mid = (lat_mid[i+1], lon_mid[i+1])
+        target_rig = (lat_rig[i+1], lon_rig[i+1])
+
+        distance_left = v_direct(current_point, target_left)
+        distance_mid = v_direct(current_point, target_mid)
+        distance_rig = v_direct(current_point, target_rig)
+
+        #wind
+        wind_left = (lefDF[i] + lefDF[i+1]) / 2
+        wind_mid = (midDF[i] + midDF[i+1]) / 2
+        wind_rig = (rigDF[i] + rigDF[i+1]) / 2
+
+        left_cost = distance_left[0] * wind_left
+        mid_cost = distance_mid[0] * wind_mid
+        rig_cost = distance_rig[0] * wind_rig
+
+        next_step = min((left_cost, target_left[0], target_left[1]),
+                        (mid_cost, target_mid[0], target_mid[1]),
+                        (rig_cost, target_rig[0], target_rig[1])
+                        )
+
+        total_cost += next_step[0]
+        current_point = (next_step[1], next_step[2])
+        optimal_path.append(current_point)
+    return optimal_path, total_cost
+
+optimal_path = greedy_optimization(lat_lef, lon_lef, lefDF, lat_mid, lon_mid, midDF, lat_rig, lon_rig, rigDF)
+print(f"optimal path {optimal_path[0]}")
+print(f"total cost of the optimum path is {optimal_path[1]/1000:.2f}")
+
+
+
+
