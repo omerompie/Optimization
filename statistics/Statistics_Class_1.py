@@ -162,7 +162,7 @@ print(df_men)
 df_women = df.loc[df["Gender"] == 'Female']
 print(df_women)
 
-
+# HIER GEBLEVEN ----------------------------------------------------------------------------
 
 # # 12c.- Plot both histograms next to each other. Women in Yellow and Men in Red
 # # Hint: Some ____ are to be repalced for the dataframes created before. 
