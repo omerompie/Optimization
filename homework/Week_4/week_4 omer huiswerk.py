@@ -24,7 +24,7 @@ from vinc import v_direct, v_inverse # Import an amazing library.
 # # 1.- Create and print 40 equidistant waypoints from LAX to Schiphol.
 # # Print them and plot them in https://www.mapcustomizer.com/
 # # mapcustomizer format: lat,lon
-# # Extra challenghe: Include the azimuth in a vector.
+# # Extra challenge: Include the azimuth in a vector.
 # # Extra challenge: Place them in a .txt file as the instructions here:
 # # https://www.w3schools.com/python/python_file_write.asp
 # =============================================================================
@@ -34,7 +34,7 @@ print("")
 # Hint: First compute the distance between LAX and AMS and divide it by 40
 
 AMS = (52.308056, 4.764167)
-LAX = (33.942791, -118.410042)
+LAX = (33.9424964,-118.4080486)
 
 distance, az = v_direct(LAX, AMS)
 print(f"distance between AMS and LAX is: {distance:.2f} meters\nazimuth is: {az:.2f} degrees ")
@@ -47,6 +47,20 @@ for i in range(1, 41):
     current_total_distance = step_size * i
     new_point = v_inverse(LAX[0], LAX[1], az, current_total_distance)
     All_waypoints.append(new_point)
+
+with open('waypoints.txt', 'w') as f:
+    # write elements of list
+    for point in All_waypoints:
+        f.write(f"{point[0]}, {point[1]}\n")
+
+#http://dwtkns.com/pointplotter/
+with open('waypoints_reversed.txt', 'w') as f:
+    # write elements of list
+    for point in All_waypoints:
+        f.write(f"{point[1]}, {point[0]}\n")
+
+
+
 print(All_waypoints)
 
 
