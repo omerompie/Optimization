@@ -44,21 +44,21 @@ step_size = distance / 40
 All_waypoints = []
 print(az)
 
-# for i in range(1, 41):
-#     current_total_distance = step_size * i
-#     new_point = v_inverse(LAX[0], LAX[1], az, current_total_distance)
-#     All_waypoints.append(new_point)
-#
-# with open('waypoints.txt', 'w') as f:
-#     # write elements of list
-#     for point in All_waypoints:
-#         f.write(f"{point[0]}, {point[1]}\n")
-#
-# #http://dwtkns.com/pointplotter/
-# with open('waypoints_reversed.txt', 'w') as f:
-#     # write elements of list
-#     for point in All_waypoints:
-#         f.write(f"{point[1]}, {point[0]}\n")
+for i in range(1, 41):
+    current_total_distance = step_size * i
+    new_point = v_inverse(LAX[0], LAX[1], az, current_total_distance)
+    All_waypoints.append(new_point)
+
+with open('waypoints.txt', 'w') as f:
+    # write elements of list
+    for point in All_waypoints:
+        f.write(f"{point[0]}, {point[1]}\n")
+
+#http://dwtkns.com/pointplotter/
+with open('waypoints_reversed.txt', 'w') as f:
+    # write elements of list
+    for point in All_waypoints:
+        f.write(f"{point[1]}, {point[0]}\n")
 
 
 

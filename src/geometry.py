@@ -1,5 +1,3 @@
-from vinc import *
-
 # src/geometry.py
 
 """
