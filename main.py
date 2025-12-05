@@ -12,7 +12,8 @@ def main():
     N_RINGS = 29
     N_ANGLES = 21
     RING_SPACING_KM = 200.0
-    ANGULAR_SPREAD_DEG = 20.0
+    MAX_WIDTH_KM = 1800.0
+    BASE_WITDH_KM = 40000.0
 
     nodes, node_coords = generate_grid(
         origin=SCHIPHOL,
@@ -20,7 +21,8 @@ def main():
         n_rings=N_RINGS,
         n_angles=N_ANGLES,
         ring_spacing_km=RING_SPACING_KM,
-        max_angular_spread_deg=ANGULAR_SPREAD_DEG,
+        max_width_km=MAX_WIDTH_KM,
+        base_width_m=BASE_WITDH_KM
     )
     print(f"Grid generation complete. Total nodes including AMS and JFK: {len(nodes)}")
     print("Sample nodes:")
@@ -55,4 +57,4 @@ if __name__ == "__main__":
     main()
 
 
-# LINK for the plot: https://www.mapcustomizer.com/map/V1-grid
+# LINK for the plot: https://www.mapcustomizer.com/map/max-spread-1800km
