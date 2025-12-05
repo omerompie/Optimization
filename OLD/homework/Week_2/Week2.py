@@ -1,5 +1,5 @@
 import math
-from homework.Week_2.airport_data import airport_data
+from OLD.homework.Week_2.airport_data import airport_data
 
 #General Variables
 V = 10

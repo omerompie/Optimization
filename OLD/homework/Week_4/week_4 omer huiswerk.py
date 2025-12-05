@@ -89,6 +89,50 @@ graphs = [[0, 1, 1, 1, 0, 0, 0, 0], [0, 0, 0, 0, 1, 1, 0, 0], [0, 0, 0, 0, 0, 1,
           [0, 0, 0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0, 0, 0]]
 # This is the adjacent matrix
 
+# The Matrix
+graphs = [[0, 1, 1, 1, 0, 0, 0, 0],
+          [0, 0, 0, 0, 1, 1, 0, 0],
+          [0, 0, 0, 0, 0, 1, 0, 0],
+          [0, 0, 0, 0, 0, 1, 1, 0],
+          [0, 0, 0, 0, 0, 0, 0, 1],
+          [0, 0, 0, 0, 0, 0, 0, 1],
+          [0, 0, 0, 0, 0, 0, 0, 1],
+          [0, 0, 0, 0, 0, 0, 0, 0]]
+
+
+def get_neighbors(node_index, matrix):
+    neighbors = []
+    # ITERATE through the row for 'node_index'
+    # IF the value is 1, append the column index to 'neighbors'
+    # TODO: Write this loop
+    return neighbors
+
+
+def find_all_paths(current_node, destination, path, all_paths):
+    # 1. Update the path with the current node
+    path = path + [current_node]
+
+    # 2. Base Case: Did we reach the end?
+    if current_node == destination:
+        all_paths.append(path)
+        return
+
+    # 3. Recursive Step: Where can we go from here?
+    # TODO: Call get_neighbors() for the current node
+    # TODO: Loop through those neighbors
+    # TODO: Inside the loop, call find_all_paths(...) for the neighbor
+
+    return all_paths
+
+
+# Execution
+master_list = []
+find_all_paths(0, 7, [], master_list)
+print("All Trajectories found:")
+for p in master_list:
+    print(p)
+
+
 
 ##============================================================================
 ## 3.- Using the same data as in workshop 2, Develop an algorithm

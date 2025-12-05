@@ -20,7 +20,7 @@ def main():
         n_rings=N_RINGS,
         n_angles=N_ANGLES,
         ring_spacing_km=RING_SPACING_KM,
-        angular_spread_deg=ANGULAR_SPREAD_DEG,
+        max_angular_spread_deg=ANGULAR_SPREAD_DEG,
     )
     print(f"Grid generation complete. Total nodes including AMS and JFK: {len(nodes)}")
     print("Sample nodes:")
@@ -45,11 +45,11 @@ def main():
         neigh_id, cost = edge
         print(f"  -> Node {neigh_id} (lat={node_coords[neigh_id][0]:.6f}, lon={node_coords[neigh_id][1]:.6f}), cost: {cost:.2f} meters")
 
-    # Uncomment below to write waypoints for plotting
-    # with open("grid_waypoints_lonlat.txt", "w") as f:
-    #     for nid in sorted(node_coords.keys()):
-    #         lat, lon = node_coords[nid]
-    #         f.write(f"{lon}, {lat}\n")
+    #Uncomment below to write waypoints for plotting
+    with open("grid_waypoints_lonlat.txt", "w") as f:
+        for nid in sorted(node_coords.keys()):
+            lat, lon = node_coords[nid]
+            f.write(f"{lat}, {lon}\n")
 
 if __name__ == "__main__":
     main()
