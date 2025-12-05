@@ -13,6 +13,7 @@ Ik heb het zo neergezet dat headwind een negatief getal is en tailwind positief
 """
 from vinc import v_direct
 from vinc import v_inverse
+
 n1 = (52.308056, 4.764167) #heb hiervoor even ams en jfk gepakt om te testen. in het algortime moeten de edges komen.
 n2 = (40.641766, -73.780968)
 def heading_calculation(n1, n2):
@@ -21,7 +22,6 @@ def heading_calculation(n1, n2):
     return heading
 
 heading = heading_calculation(n1, n2)
-print(heading)
 
 wind_heading = 90 #random wind heading. moet uit die dat komen en rishaad moet nog even kijken hoe we de waardes voor elke node moeten krijgen
 wind_speed_kts = 55
@@ -30,10 +30,10 @@ import math
 def head_tail_wind_calculation(heading, wind_heading, wind_speed_kts):
     # signed angle difference between heading and wind_FROM
     wind_to_deg = (wind_heading + 180) % 360
-    diff = (wind_to_deg - heading + 180) % 360 - 180
-    return (wind_speed_kts*1.852) * math.cos(math.radians(diff))
+    diff = (wind_to_deg - heading + 180) % 360 - 180 #berekening wind angle
+    return (wind_speed_kts*1.852) * math.cos(math.radians(diff)) #berekening wind speed met headwind als negatief component
 head_tail_wind_kmh = head_tail_wind_calculation(heading, wind_heading, wind_speed_kts)
-print(head_tail_wind_kmh)
+
 
 """
 Berekening ground speed
@@ -41,11 +41,11 @@ Berekening ground speed
 TAS_M = 0.83 #moet uit aircraft data komen, heb nu even dit neergezet.
 
 def ground_speed_calculation(TAS_M, T_height, head_tail_wind_kmh):
-    TAS_kmh = TAS_M * math.sqrt(T_height*287*1.4) * 3.6
-    return (TAS_kmh + head_tail_wind_kmh)
+    TAS_kmh = TAS_M * math.sqrt(T_height*287*1.4) * 3.6 #berekening van mach naar km/h
+    return (TAS_kmh + head_tail_wind_kmh) #berekening ground speed
 
 GS_kmh = ground_speed_calculation(TAS_M, T_height, head_tail_wind_kmh)
-print(GS_kmh)
+
 
 
 
