@@ -41,11 +41,42 @@ Nu weten we dat mach = 0.82 de zuinigste is, dus ik ga de dataframe aanpassen na
 df_aircraft = df[(df["altitude"] == 34000) & (df["Mach"] == 0.82)]
 
 
-print(df_aircraft.info())
+#print(df_aircraft.info())
 
-df_aircraft.to_csv("Aircraft_1_filtered.csv", index=False)
+#df_aircraft.to_csv("Aircraft_1_filtered.csv", index=False)
 
 
+df_ac2 = pd.read_csv('Aircraft_2.txt')
+
+grouped1 = df_ac2.groupby("M")
+
+# Berekenen van gemiddelde fuel flow
+avg_fuel_flow1 = grouped1["FF"].mean()
+
+def tas_kmh1(Ma):
+    return Ma * math.sqrt(T_height * 287 * 1.4) * 3.6
+
+# Specific range berekenen
+zuinigheid1 = avg_fuel_flow1.copy()
+for Ma in avg_fuel_flow1.index:
+    GS = tas_kmh1(Ma)
+    FF = avg_fuel_flow1[Ma]
+    zuinigheid1[Ma] = GS / FF    # km per kg brandstof
+#print(zuinigheid1.sort_values(ascending=False))
+
+"""
+M
+0.81    0.272307
+0.82    0.271657
+0.80    0.270813
+0.79    0.269444
+0.78    0.267480
+Nu weten we dat mach = 0.81 de zuinigste is, dus ik ga de dataframe aanpassen naar mach is 0.81 en altitude is FL340
+"""
+
+df_aircraft2 = df_ac2[(df_ac2["M"] == 0.81)]
+
+df_aircraft2.to_csv('Aircraft_2_filtered.csv', index=False)
 
 
 
