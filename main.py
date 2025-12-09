@@ -1,9 +1,18 @@
 from src.grid import generate_grid, build_adjacency_list
 from src.vinc import v_direct
+from src.ansp import get_ansp_cost_for_edge
 
-def distance_cost(a, b):
-    d_m, _ = v_direct(a, b)
-    return d_m  # meters, placeholder
+def calculate_edge_cost(a, b, state):
+    # distance, bearing (for time, wind, etc.)
+    dist_m, bearing = v_direct(a, b)
+    dist_km = dist_m / 1000.0
+    # ... your TAS, wind, GS, time, fuel_kg, fuel_cost, time_cost ...
+
+    ansp_cost = get_ansp_cost_for_edge(a, b)
+
+    total_cost = ansp_cost
+    return total_cost
+
 
 def main():
     SCHIPHOL = (52.308056, 4.764167)
@@ -34,7 +43,7 @@ def main():
         node_coords=node_coords,
         n_rings=N_RINGS,
         n_angles=N_ANGLES,
-        edge_cost_fn=distance_cost,
+        edge_cost_fn=calculate_edge_cost,
     )
 
     print(f"\nNumber of nodes: {len(node_coords)}")
