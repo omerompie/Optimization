@@ -49,28 +49,33 @@ GS_kmh = ground_speed_calculation(TAS_M, T_height, head_tail_wind_kmh)
 
 #Step 4 Rishaad
 # Calculation of time from node to node ; moet nog kijken met omer voor de juiste distances want die verschillen per node
+distance_nodes = 150 # een voorbeeld
+fuel_flow =1000 # uit aircraft data en gebruikt Noah's calculation voor FF
+def get_time(distance_nodes,GS_kmh): # We moeten de afstanden ook in uren krijgen
+    time_nodes = distance_nodes/GS_kmh #berekening van de tijd in uren van node to node
+    return time_nodes #Tijd in uren
 
-Distance = 200 # voor nu even op 200 gezet maar we moeten kijken.
-
-Time = Distance/GS_kmh
-print("The time is",Time)
 
 #Step 5 Rishaad fuel calculation
 #Fuel flow moeten we kijken of we dat constant willen houden of juist niet, dit moet nog besproken worden.
 
-Fuel_flow = 0.025 # voor nu een random getal ingevuld als test
-
-Fuel_burned = Fuel_flow * Time
-print("The burned fuel is",Fuel_burned)
+def get_fuel_burned(fuel_flow,time_nodes):
+    fuel_burned = fuel_flow * time_nodes
+    return fuel_burned
 
 #Step 6 calculate fuel cost Rishaad fuel cost
 
-Fuel_costs = Fuel_burned * 0.683125 # kosten van fuel per kg
-print("The cost of the fuel is",Fuel_costs)
+def get_fuel_costs(fuel_burned):
+    fuel_cost = fuel_burned * 0,683125 # kosten van fuel per kg
+    return fuel_cost
+
 
 #Calculation of cost of time
 
-Cost_Of_Time = Time * 35 * 0.683125
-print("the cost of time is", Cost_Of_Time)
+def calculation_cost_of_time(time_nodes):
+    cost_of_time = time_nodes * 35 * 0,683125
+    return cost_of_time
 
-#Code werkt
+
+
+
