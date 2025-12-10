@@ -6,7 +6,7 @@ weight_table = df["Gross_Weight"].tolist() #for interpolation and extrapolation
 ff_table = df["fuel_flow"].tolist() #for interpolation and extrapolation
 
 
-def fuel_flow_calculation(weight, weight_table, ff_table):
+def get_fuel_flow(weight, weight_table, ff_table):
 
     pairs = sorted(zip(weight_table, ff_table))
     weight_table = [p[0] for p in pairs]
@@ -41,8 +41,8 @@ def fuel_flow_calculation(weight, weight_table, ff_table):
 
 current_weight = 260080 #dit moet dus een variabele worden voor elke edge, ik doe het nu voor W0
 
-FF_interpolation = fuel_flow_calculation(current_weight, weight_table, ff_table)
-print(FF_interpolation)
+
+
 
 """
 De fuel flow voor Wo is 7898.40 kg / hour. dit komt overeen met mijn handmatige berekening. de functie is dus juist
