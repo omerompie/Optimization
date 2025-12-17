@@ -1,9 +1,18 @@
 from src.grid import generate_grid, build_adjacency_list
 from src.vinc import v_direct
+from src.ansp import get_ansp_cost_for_edge
 
-def distance_cost(a, b):
-    d_m, _ = v_direct(a, b)
-    return d_m  # meters, placeholder
+def calculate_edge_cost(a, b, state):
+    # distance, bearing (for time, wind, etc.)
+    dist_m, bearing = v_direct(a, b)
+    dist_km = dist_m / 1000.0
+    # ... your TAS, wind, GS, time, fuel_kg, fuel_cost, time_cost ...
+
+    ansp_cost = get_ansp_cost_for_edge(a, b)
+
+    total_cost = ansp_cost
+    return total_cost
+
 
 def main():
     SCHIPHOL = (52.308056, 4.764167)
@@ -12,7 +21,8 @@ def main():
     N_RINGS = 29
     N_ANGLES = 21
     RING_SPACING_KM = 200.0
-    ANGULAR_SPREAD_DEG = 20.0
+    MAX_WIDTH_KM = 1800.0
+    BASE_WITDH_KM = 40000.0
 
     nodes, node_coords = generate_grid(
         origin=SCHIPHOL,
@@ -20,7 +30,8 @@ def main():
         n_rings=N_RINGS,
         n_angles=N_ANGLES,
         ring_spacing_km=RING_SPACING_KM,
-        max_angular_spread_deg=ANGULAR_SPREAD_DEG,
+        max_width_km=MAX_WIDTH_KM,
+        base_width_m=BASE_WITDH_KM
     )
     print(f"Grid generation complete. Total nodes including AMS and JFK: {len(nodes)}")
     print("Sample nodes:")
@@ -32,7 +43,7 @@ def main():
         node_coords=node_coords,
         n_rings=N_RINGS,
         n_angles=N_ANGLES,
-        edge_cost_fn=distance_cost,
+        edge_cost_fn=calculate_edge_cost,
     )
 
     print(f"\nNumber of nodes: {len(node_coords)}")
@@ -55,4 +66,4 @@ if __name__ == "__main__":
     main()
 
 
-# LINK for the plot: https://www.mapcustomizer.com/map/V1-grid
+# LINK for the plot: https://www.mapcustomizer.com/map/max-spread-1800km

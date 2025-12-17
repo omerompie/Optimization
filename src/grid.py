@@ -1,8 +1,9 @@
 # src/grid.py
 
+import math
 from typing import Dict, List, Tuple
 from .vinc import v_direct, v_inverse
-import math
+
 
 def generate_grid(
         origin: Tuple[float, float],
@@ -10,56 +11,76 @@ def generate_grid(
         n_rings: int,
         n_angles: int,
         ring_spacing_km: float,
-        max_angular_spread_deg: float,
-        min_spread_factor: float = 0.6,  # NEW PARAMETER
+        max_width_km: float,  # CHANGED: We now define the max width in KM, not degrees
+        base_width_m: float,
 ) -> Tuple[List[Tuple[float, float]], Dict[int, Tuple[float, float]]]:
     """
-    Generate 2D lateral grid with rounded diamond shape.
+    Generate 2D lateral grid between origin and destination.
 
-    Spread varies smoothly: moderate at start/end, maximum in middle.
-
-    Args:
-        min_spread_factor: Minimum spread as fraction of max_angular_spread_deg.
-                          E.g., 0.4 means 40% spread at AMS and JFK.
+    Uses a fixed Lateral Width (km) approach to ensure symmetry.
+    The grid starts narrow, reaches 'max_width_km' in the middle,
+    and narrows symmetrically at the end.
     """
     AMS_lat, AMS_lon = origin
     JFK_lat, JFK_lon = destination
 
-    _, initial_bearing = v_direct(origin, destination)
+    # Calculate initial bearing and total distance
+    total_dist_m, initial_bearing = v_direct(origin, destination)
 
     nodes: List[Tuple[float, float]] = []
     node_coords: Dict[int, Tuple[float, float]] = {}
 
+    # 1. Add Origin Node (AMS)
     nodes.append((AMS_lat, AMS_lon))
     node_coords[0] = (AMS_lat, AMS_lon)
     node_id = 1
 
     for ring_idx in range(n_rings):
+        # Distance along the Great Circle
         ring_distance_m = (ring_idx + 1) * ring_spacing_km * 1000.0
 
-        # Progress from 0.0 (start) to 1.0 (end)
-        progress = ring_idx / (n_rings - 1) if n_rings > 1 else 0.5
+        # Stop if we overshoot the destination
+        if ring_distance_m >= total_dist_m:
+            break
 
-        # Distance from midpoint (0.0 at center, 0.5 at ends)
-        distance_from_center = abs(progress - 0.5)
+        # --- SINE WAVE LOGIC (SYMMETRICAL WIDTH) ---
+        # Calculate progress from 0.0 to 1.0
+        progress = ring_idx / (n_rings - 1)
 
-        # Inverted parabola: peaks at 1.0 in center, drops to 0.0 at ends
-        parabola_factor = 1.0 - (2.0 * distance_from_center) ** 2
+        # DEFINE YOUR BASE WIDTH HERE (The width at the start and end)
+        # Currently hardcoded to 40 km. Change this to 10 km for a tighter pinch.
 
-        # Blend between min and max spread
-        spread_factor = min_spread_factor + (1.0 - min_spread_factor) * parabola_factor
+        # --- SINE WAVE LOGIC ---
+        progress = ring_idx / (n_rings - 1)
+        sine_factor = math.sin(math.pi * progress)
 
-        # Current spread for this ring
-        current_angular_spread = max_angular_spread_deg * spread_factor
+        # Now we add the base width to the sine calculation
+        # The sine wave adds the EXTRA width on top of the base
+        current_width_m = (max_width_km * 1000.0 * sine_factor) + base_width_m
 
-        # Angle step for this ring
-        if n_angles == 1:
-            angle_step = 0.0
+        # --- CONVERT WIDTH TO ANGLE ---
+        # Geometry: tan(theta) = Opposite / Adjacent
+        # angle = atan( half_width / distance )
+        # This naturally makes the angle LARGE at the start and SMALL at the end
+        half_width_m = current_width_m / 2.0
+
+        # Prevent division by zero or weirdness at very small distances
+        if ring_distance_m < 1000:
+            angle_spread_rad = math.radians(90)  # Cap at 90 deg
         else:
-            angle_step = 2 * current_angular_spread / (n_angles - 1)
+            angle_spread_rad = math.atan(half_width_m / ring_distance_m)
 
+        current_spread_deg = math.degrees(angle_spread_rad)
+
+        # Calculate angle step
+        if n_angles > 1:
+            current_step = 2 * current_spread_deg / (n_angles - 1)
+        else:
+            current_step = 0
+
+        # Generate points for this ring
         for angle_idx in range(n_angles):
-            angle_offset = -current_angular_spread + angle_idx * angle_step
+            angle_offset = -current_spread_deg + angle_idx * current_step
             bearing = initial_bearing + angle_offset
             lat, lon = v_inverse(AMS_lat, AMS_lon, bearing, ring_distance_m)
 
@@ -67,6 +88,7 @@ def generate_grid(
             node_coords[node_id] = (lat, lon)
             node_id += 1
 
+    # 3. Add Destination Node (JFK)
     nodes.append((JFK_lat, JFK_lon))
     node_coords[node_id] = (JFK_lat, JFK_lon)
 
