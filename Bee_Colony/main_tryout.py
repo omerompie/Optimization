@@ -1,10 +1,17 @@
+"""
+Deze main tryout heb ik gedaan omdat ik de main functie om de graph te genereren moest opsplitsen in 2
+aangezien hij uit twee parts bestond, eentje om de graph te bouwen en eentje om te kijken voor bugs
+in de bees heb ik alleen de graph nodig, daarom heb ik hem opgesplitst. om de oude te behouden
+heb ik een nieuw bestand gemaakt, deze, waarin ik het heb opgesplitst om in bees te gebruiken :)
+"""
+
 from src.grid import generate_grid, build_adjacency_list
 from src.vinc import v_direct
 from src.ansp import get_ansp_cost_for_edge
 
 def calculate_edge_cost(a, b):
     # Dummy: alleen zodat build_adjacency_list kan draaien.
-    # Heeft geen invloed op jouw bee-algoritme als je later get_trajectory_cost gebruikt.
+    # Heeft geen invloed op  bee-algoritme als je later get_trajectory_cost gebruikt.
     return 0.0
 
 
@@ -58,7 +65,7 @@ def main():
         print(f"  -> Node {neigh_id} (lat={node_coords[neigh_id][0]:.6f}, lon={node_coords[neigh_id][1]:.6f}), cost: {cost:.2f} meters")
 
     # Uncomment below to write waypoints for plotting
-    with open("grid_waypoints_lonlat.txt", "w") as f:
+    with open("../grid_waypoints_lonlat.txt", "w") as f:
         for nid in sorted(node_coords.keys()):
             lat, lon = node_coords[nid]
             f.write(f"{lat}, {lon}\n")
