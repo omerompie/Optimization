@@ -2,7 +2,7 @@ from src.grid import generate_grid, build_adjacency_list
 from src.vinc import v_direct
 from src.ansp import get_ansp_cost_for_edge
 
-def calculate_edge_cost(a, b, state):
+def calculate_edge_cost(a, b):
     # distance, bearing (for time, wind, etc.)
     dist_m, bearing = v_direct(a, b)
     dist_km = dist_m / 1000.0
