@@ -1,4 +1,4 @@
-POPULATION_SIZE = 20 #voor nu klein zodat we snel antwoord krijgen, kan opgeschaald worden
+POPULATION_SIZE = 3 #voor nu klein zodat we snel antwoord krijgen, kan opgeschaald worden
 MAX_ITERATIONS = 100 #zelfde als voor pupulation: klein voor nu
 LIMIT = 15 #zelfde als voor population: klein voor nu
 TEMPERATURE_HEIGHT = 288.15 - ((34000 * 0.3048) * 0.0065) #temperature at our fixed flight altitude of 34,0000 feet
@@ -44,6 +44,9 @@ for i in range(NP):
     Costs[i] = cost_euro
     Trials[i] = 0
 
+print(Solutions[1])
+print(Node_coordinates[610])
+
 min_cost = min(Costs) #finds the minimum value of all costs
 b = Costs.index(min_cost) #Gives the index of the best solution and name it b
 BestSolution = Solutions[b].copy() #to avoid accidentally overwriting it later
@@ -52,6 +55,7 @@ BestCost = Costs[b]
 iteration = 0
 
 while iteration < NumIter: #start of the headloop
+
     """
     Employed bee phase
     """
