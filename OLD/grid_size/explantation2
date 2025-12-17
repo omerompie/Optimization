@@ -1,0 +1,35 @@
+project_root/
+
+data/
+
+performance/ — raw PDB files (CSV/Excel)
+
+wind/ — NetCDF or sample wind files
+
+anSP/ — any rate tables you later add
+
+src/
+
+__init__.py
+
+geometry.py — Vincenty wrappers, bearings, distance helpers
+
+grid.py — grid generation and adjacency building
+
+cost.py — edge and path cost calculations (fuel, ANSP, time, RTA)
+
+algorithms/
+
+__init__.py
+
+dijkstra.py
+
+(later) genetic.py / bee.py / astar.py
+
+notebooks/ — exploratory Jupyter notebooks (toy problems, plots)
+
+tests/ — simple unit tests once things stabilize
+
+main.py — entry point script to run full optimization AMS→JFK
+
+requirements.txt — numpy, scipy, pandas, xarray, etc.
