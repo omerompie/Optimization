@@ -44,9 +44,6 @@ for i in range(NP):
     Costs[i] = cost_euro
     Trials[i] = 0
 
-print(Solutions[1])
-print(Node_coordinates[610])
-
 min_cost = min(Costs) #finds the minimum value of all costs
 b = Costs.index(min_cost) #Gives the index of the best solution and name it b
 BestSolution = Solutions[b].copy() #to avoid accidentally overwriting it later
@@ -59,4 +56,27 @@ while iteration < NumIter: #start of the headloop
     """
     Employed bee phase
     """
+
+    for i in range(NP):
+        current_solution = Solutions[i]
+        current_costs = Costs[i]
+
+        candidate_solution = MutateSolution(current_solution, graph, n_rings=N_RINGS)
+        candidate_costs, _, _, _ = get_trajectory_cost(candidate_solution, Node_coordinates)
+
+        if candidate_costs < current_costs:
+            Solutions[i] = candidate_solution
+            Costs[i] = candidate_costs
+            Trials[i] = 0
+
+        else:
+            Trials[i] += 1
+
+    min_cost = min(Costs)
+    b = Costs.index(min_cost)
+
+    if min_cost < BestCost:
+        BestCost = min_cost
+        BestSolution = Solutions[b].copy()
+    break
 
