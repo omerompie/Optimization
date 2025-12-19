@@ -1,4 +1,4 @@
-from Trajectory.Total_costs_edge import get_edge_cost
+from Trajectory.edge_cost_aircraft2 import get_edge_cost_ac2
 
 
 """
@@ -18,7 +18,7 @@ FUEL_BURN_MAX = 62600 #maximum amount of fuel burn for the cruise based on aircr
 Now it's time to calculate the cost of a whole trajectory 
 """
 
-def get_trajectory_cost(
+def get_trajectory_cost_ac2(
     trajectory, #dit moet een lijst zijn van alle nodes. elke node moet een 'identificatie' hebben
     node_coordinates, #dit moet een dictionary zijn met alle node identificaties met hun bijbehorende coordinaten
     wind_model=None, #omdat we nu nog geen wind model hebben zet ik hem op none
@@ -38,7 +38,7 @@ def get_trajectory_cost(
         wp_i = node_coordinates[node_i]  #get the coordinates of i out of the dictionary based on the ID
         wp_j = node_coordinates[node_j]  #get the coordinates of i out of the dictionary based on the ID
 
-        fuel_ij, time_ij, cost_ij = get_edge_cost( #store the return of the function in fuel_ij, time_ij and cost_ij
+        fuel_ij, time_ij, cost_ij = get_edge_cost_ac2( #store the return of the function in fuel_ij, time_ij and cost_ij
             waypoint_i=wp_i,
             waypoint_j=wp_j,
             current_weight_kg=weight,

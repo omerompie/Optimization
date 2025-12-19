@@ -9,7 +9,7 @@ naar 1 functie uit dit bestand te callen.
 
 from Edge_calculation.vinc import v_direct
 import math
-from dataframe_filtering.Fuel_Flow_bepalen_aan_de_hand_van_gewicht import get_fuel_flow
+from dataframe_filtering.Fuel_Flow_bepalen_aan_de_hand_van_gewicht import get_fuel_flow_ac2
 import pandas as pd
 from src.ansp import get_ansp_cost_for_edge
 
@@ -105,7 +105,7 @@ def get_cost_of_time(time_nodes, CI, fuel_costs_kg):
 Now we combine the previous functions
 """
 
-def get_edge_cost(
+def get_edge_cost_ac2(
     waypoint_i, #the first waypoint
     waypoint_j, #the second waypoint
     current_weight_kg, #the current weight. Later used in trajectory costs. at the start of the cruise this is 257743
@@ -131,11 +131,11 @@ def get_edge_cost(
         wind_heading, wind_speed_kts = wind_model(position, current_time) #we call the function, but as said, the function still has to be created
         head_tail_kmh = get_wind(heading_deg, wind_heading, wind_speed_kts) #calculate the head or tail wind with the function
 
-    ground_speed_kmh = get_ground_speed(MACH_AIRCRAFT_1, TEMPERATURE_HEIGHT, head_tail_kmh)
+    ground_speed_kmh = get_ground_speed(MACH_AIRCRAFT_2, TEMPERATURE_HEIGHT, head_tail_kmh)
     #calculate the ground speed with the function
     time_h = get_time(distance_km, ground_speed_kmh) #calculate the time with the function
 
-    fuel_flow_kg_per_h = get_fuel_flow(current_weight_kg, weight_table, ff_table)
+    fuel_flow_kg_per_h = get_fuel_flow_ac2(current_weight_kg, weight_table, ff_table)
     #calculate the fuel flow by the interpolation function
     fuel_burn_kg = get_fuel_burn(fuel_flow_kg_per_h, time_h)
     #calculate the fuel burn with the function
@@ -157,7 +157,7 @@ waypoint_i = (52.308056, 4.764167)
 waypoint_j = (52.57845370868331, 1.856151430826293)
 current_weight_kg = WEIGHT_START_CRUISE
 
-fuel_burn_kg, time_h, cost_eur = get_edge_cost(waypoint_i, waypoint_j, current_weight_kg)
+fuel_burn_kg, time_h, cost_eur = get_edge_cost_ac2(waypoint_i, waypoint_j, current_weight_kg)
 
 print(f'The total fuel burn on this edge is {fuel_burn_kg:.0f} kg')
 print(f'The total time for this edge is {time_h:.2f} hours')

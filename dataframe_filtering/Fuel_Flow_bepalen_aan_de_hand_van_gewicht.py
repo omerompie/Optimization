@@ -1,10 +1,13 @@
 import pandas as pd
 
 df = pd.read_csv('Aircraft_1_filtered.csv')
+df2 = pd.read_csv('Aircraft_2_filtered.csv')
 
 weight_table = df["Gross_Weight"].tolist() #for interpolation and extrapolation
 ff_table = df["fuel_flow"].tolist() #for interpolation and extrapolation
 
+weight_table2 = df2['weight'].tolist()
+ff_table2 = df2['FF'].tolist()
 
 def get_fuel_flow(weight, weight_table, ff_table):
 
@@ -49,4 +52,36 @@ De fuel flow voor Wo is 7898.40 kg / hour. dit komt overeen met mijn handmatige 
 """
 
 
+def get_fuel_flow_ac2(weight, weight_table2, ff_table2):
+
+    pairs = sorted(zip(weight_table2, ff_table2))
+    weight_table2 = [p[0] for p in pairs]
+    ff_table2 = [p[1] for p in pairs]  #this code ensures that the values are sorted from low to high in the list
+
+    if weight in weight_table2:
+        return ff_table2[weight_table2.index(weight)] #for the magic coincidence that the exact weight is listed in the data
+
+    Wmin = weight_table2[0]
+    Wmax = weight_table2[-1] #boundaries of the table
+
+    if weight < Wmin:
+        Wa, Wb = weight_table2[0], weight_table2[1]
+        FFa, FFb = ff_table2[0], ff_table2[1] #this is for extrapolation
+
+    elif weight > Wmax:
+        Wa, Wb = weight_table2[-2], weight_table2[-1]
+        FFa, FFb = ff_table2[-2], ff_table2[-1]
+
+    else:
+        for i in range(len(weight_table2) - 1): #this is the interpolation
+            Wa = weight_table2[i]
+            Wb = weight_table2[i + 1]
+            if Wa <= weight <= Wb:
+                FFa = ff_table2[i]
+                FFb = ff_table2[i + 1]
+                break
+    FF = ((weight - Wb) / (Wa - Wb)) * FFa + \
+         ((weight - Wa) / (Wb - Wa)) * FFb
+
+    return FF
 

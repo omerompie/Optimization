@@ -109,5 +109,27 @@ def MutateSolution(solution, graph, n_rings=29, rng=None, max_tries=200):
 
     return solution
 
+"""
+The next function is the input for the roulette wheel. It works as follows:
+During the onlooker phase. different trajectories will be compared to each other. 
+Better trajectories get a higher score a. 
+This score will be divided by the sum of all a values to get the probability.
+This function convert all probabilities into intervals between 0 and 1
+For example: if a probability of index i is 0.5. This function assigns the interval 0.0 to 0.5 to it. 
+the next solution j has a probability of 0.3. this function assigns the interval 0.5 to 0.8 to it. 
+Later, the random function calls a number between 0 or 1. As can be seen, higher probabilities have higher 
+chances to be selected by the random function.
+"""
+
+
+def select_index_by_probability(prob_list):
+    r = random.random()  # random number between 0 and 1
+    cumulative = 0.0  # cumulative sum
+    for index in range(len(prob_list)):
+        cumulative += prob_list[index]
+        if r <= cumulative:
+            return index #
+    return len(prob_list) -1 #fallback by rounding numbers. if r is bigger than the cumulative
+
 
 
