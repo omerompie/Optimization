@@ -1,5 +1,11 @@
+import sys
+import os
 import folium
 
+# --- PATH SETUP ---
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
+sys.path.append(parent_dir)
 
 def visualize_results():
     # 1. READ THE GRID NODES
@@ -10,7 +16,7 @@ def visualize_results():
                 lat, lon = map(float, line.strip().split(','))
                 grid_coords.append((lat, lon))
     except FileNotFoundError:
-        print("Error: grid_waypoints_lonlat.txt not found. Run main.py first!")
+        print("Error: grid_waypoints_lonlat.txt not found. Run main_dijkstra.py first!")
         return
 
     # 2. READ THE SOLUTION PATH
@@ -21,7 +27,7 @@ def visualize_results():
                 lat, lon = map(float, line.strip().split(','))
                 path_coords.append((lat, lon))
     except FileNotFoundError:
-        print("Error: solution_path.txt not found. Run main.py first!")
+        print("Error: solution_path.txt not found. Run main_dijkstra.py first!")
         return
 
     # 3. CREATE MAP (Centered on Atlantic)
@@ -29,7 +35,6 @@ def visualize_results():
     m = folium.Map(location=[50, -30], zoom_start=4, tiles='CartoDB dark_matter')
 
     # 4. PLOT GRID (Grey Dots)
-    # We plot them as tiny circles
     for lat, lon in grid_coords:
         folium.CircleMarker(
             location=[lat, lon],
@@ -40,8 +45,9 @@ def visualize_results():
         ).add_to(m)
 
     # 5. PLOT START & END
-    folium.Marker(grid_coords[0], popup="AMS", icon=folium.Icon(color='green')).add_to(m)
-    folium.Marker(grid_coords[-1], popup="JFK", icon=folium.Icon(color='red')).add_to(m)
+    if grid_coords:
+        folium.Marker(grid_coords[0], popup="AMS", icon=folium.Icon(color='green')).add_to(m)
+        folium.Marker(grid_coords[-1], popup="JFK", icon=folium.Icon(color='red')).add_to(m)
 
     # 6. PLOT OPTIMAL PATH (Red Line)
     folium.PolyLine(
@@ -54,17 +60,18 @@ def visualize_results():
 
     # 7. VISUALIZE THE "FAN OUT" (Optional Debug)
     # Show exactly where Node 0 connects to (Nodes 1-21)
-    ams_lat, ams_lon = grid_coords[0]
-    # Assuming first 21 nodes after AMS are the first ring
-    for i in range(1, 22):
-        if i < len(grid_coords):
-            lat, lon = grid_coords[i]
-            folium.PolyLine(
-                [(ams_lat, ams_lon), (lat, lon)],
-                color="blue",
-                weight=1,
-                opacity=0.3
-            ).add_to(m)
+    if grid_coords:
+        ams_lat, ams_lon = grid_coords[0]
+        # Assuming first 21 nodes after AMS are the first ring
+        for i in range(1, 22):
+            if i < len(grid_coords):
+                lat, lon = grid_coords[i]
+                folium.PolyLine(
+                    [(ams_lat, ams_lon), (lat, lon)],
+                    color="blue",
+                    weight=1,
+                    opacity=0.3
+                ).add_to(m)
 
     # 8. SAVE
     output_file = "optimization_map.html"
