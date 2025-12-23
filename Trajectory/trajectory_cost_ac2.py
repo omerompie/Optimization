@@ -1,6 +1,4 @@
-from Trajectory.Total_costs_edge import get_edge_cost
-
-
+from Trajectory.edge_cost_aircraft2 import get_edge_cost_ac2
 
 
 """
@@ -20,7 +18,7 @@ FUEL_BURN_MAX = 62600 #maximum amount of fuel burn for the cruise based on aircr
 Now it's time to calculate the cost of a whole trajectory 
 """
 
-def get_trajectory_cost(
+def get_trajectory_cost_ac2(
     trajectory, #dit moet een lijst zijn van alle nodes. elke node moet een 'identificatie' hebben
     node_coordinates, #dit moet een dictionary zijn met alle node identificaties met hun bijbehorende coordinaten
     wind_model=None, #omdat we nu nog geen wind model hebben zet ik hem op none
@@ -40,11 +38,11 @@ def get_trajectory_cost(
         wp_i = node_coordinates[node_i]  #get the coordinates of i out of the dictionary based on the ID
         wp_j = node_coordinates[node_j]  #get the coordinates of i out of the dictionary based on the ID
 
-        fuel_ij, time_ij, cost_ij = get_edge_cost( #store the return of the function in fuel_ij, time_ij and cost_ij
+        fuel_ij, time_ij, cost_ij = get_edge_cost_ac2( #store the return of the function in fuel_ij, time_ij and cost_ij
             waypoint_i=wp_i,
             waypoint_j=wp_j,
-            waypoint_i_id=node_i,
             current_weight_kg=weight,
+            wind_model=wind_model,
             current_time=current_time, #link the variables needed for get_edge_cost to the right variables in this function
         ) #This is the edge calculation with the get_edge_cost. It does this for every edge by using the for loop
 
@@ -55,6 +53,7 @@ def get_trajectory_cost(
 
         weight -= fuel_ij #for every iteration, substract the fuel burn from the weight so that the next iteration uses an updated weight
         current_time += time_ij #actually the same as th total time, but this variable will be used for the weather model to define the weather at that exact timestamp
+
     if total_fuel > FUEL_BURN_MAX:
         total_cost += 1e12 * (total_fuel - FUEL_BURN_MAX) #penaly relative to how much you are above your maximum fuel burn
     return (total_cost, total_fuel, total_time, weight)

@@ -2,105 +2,59 @@ import sys
 import os
 
 # --- 1. SETUP PATHS ---
-# This allows 'main_dijkstra.py' (inside Dijkstra folder) to import 'src' & 'Trajectory' (from parent)
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
 sys.path.append(parent_dir)
 
 from src.grid import generate_grid, build_adjacency_list
 from src.solver import solve_dynamic_dijkstra
-from src.ansp import get_ansp_cost_for_edge
 
 # Import Team Physics
+# After merge, this file will have the new signature with weather inside
 from Trajectory.Total_costs_edge import get_edge_cost
 
 # ==========================================
 #        GLOBAL CONFIGURATION
 # ==========================================
-
-# --- A. LOCATION SETTINGS ---
 SCHIPHOL = (52.308056, 4.764167)
 JFK = (40.641766, -73.780968)
 
-# --- B. GRID SETTINGS (The "Chassis") ---
-# Validated High-Res Config: 87 rings * 70km = ~6000km range
 N_RINGS = 29
 N_ANGLES = 21
 RING_SPACING_KM = 200.0
 MAX_WIDTH_KM = 1800.0
 BASE_WIDTH_M = 40000.0
 
-# --- C. SOLVER SETTINGS (The "Engine") ---
-INITIAL_WEIGHT_KG = 257743.0  # Start Weight
-START_TIME_SEC = 0.0  # Simulation Start
-TIME_BIN_SEC = 100.0  # Pruning Bucket Size (Smaller = Slower & More Precise)
+INITIAL_WEIGHT_KG = 257743.0
+START_TIME_SEC = 0.0
+TIME_BIN_SEC = 100.0
 
 
 # ==========================================
-#        WIND MODELS & PHYSICS
+#        PHYSICS ADAPTER
 # ==========================================
 
-def wavy_wind_model(position, time_hr):
+def physics_adapter(u_id, waypoint_i, waypoint_j, current_weight_kg, current_time):
     """
-    A sophisticated "Wavy" Wind Model.
-    Creates a series of headwind walls and tailwind corridors to force
-    the aircraft to fly a North -> South -> North wave pattern.
+    Bridges the gap between Solver and Team Code.
+    Now supports the "Merged" logic where Weather and ANSP are internal.
     """
-    lat, lon = position
 
-    # Base Wind: A moderate headwind everywhere (25 kts from West)
-    wind_dir = 270.0
-    wind_spd = 25.0
+    # CALL TEAMMATE'S FUNCTION
+    # His signature: get_edge_cost(waypoint_i, waypoint_j, waypoint_i_id, current_weight_kg, current_time)
 
-    # PHASE 1: FORCE NORTH (East Atlantic)
-    # Block 48N-53N with strong headwind
-    if -20.0 < lon <= 5.0:
-        if 48.0 < lat < 53.0:
-            wind_spd = 130.0
-            wind_dir = 270.0
-
-    # PHASE 2: FORCE SOUTH-WEST (Mid-Atlantic)
-    # Block Northern path >54N, open Southern tunnel
-    elif -50.0 < lon <= -20.0:
-        if lat > 54.0:
-            wind_spd = 160.0  # Wall
-            wind_dir = 270.0
-        else:
-            wind_spd = 80.0  # Tunnel
-            wind_dir = 45.0  # From North-East
-
-    # PHASE 3: FORCE NORTH TO JFK (West Atlantic)
-    # Block Southern approach <45N
-    elif lon <= -50.0:
-        if lat < 45.0:
-            wind_spd = 120.0  # Wall
-            wind_dir = 270.0
-        else:
-            wind_spd = 40.0
-            wind_dir = 135.0
-
-    return (wind_dir, wind_spd)
-
-
-def physics_adapter(waypoint_i, waypoint_j, current_weight_kg, wind_model, current_time):
-    """
-    Bridges the gap between Solver (Total Cost) and Team Code (Fuel/Time).
-    Adds ANSP costs to the Fuel/Time costs.
-    """
-    # 1. Get Fuel & Time from Team Code
-    fuel_burn, time_h, partial_cost = get_edge_cost(
-        waypoint_i,
-        waypoint_j,
-        current_weight_kg,
-        wind_model,
-        current_time
+    fuel_burn, time_h, total_cost = get_edge_cost(
+        waypoint_i=waypoint_i,
+        waypoint_j=waypoint_j,
+        waypoint_i_id=u_id,  # <--- PASSING THE ID FOR CSV LOOKUP
+        current_weight_kg=current_weight_kg,
+        current_time=current_time  # <--- PASSING EXACT TIME FOR INTERPOLATION
     )
 
-    # 2. Add the missing ANSP cost
-    ansp_cost = get_ansp_cost_for_edge(waypoint_i, waypoint_j)
-
-    # 3. Sum it up
-    total_cost = partial_cost + ansp_cost
+    # Note: We do NOT add ANSP cost here anymore.
+    # Your teammate added "ansp_cost = get_ansp_cost_for_edge" inside get_edge_cost.
+    # We do NOT pass a wind model here.
+    # Your teammate imports "get_wind_kmh" inside Total_costs_edge.py.
 
     return fuel_burn, time_h, total_cost
 
@@ -110,8 +64,7 @@ def physics_adapter(waypoint_i, waypoint_j, current_weight_kg, wind_model, curre
 # ==========================================
 
 def main():
-    print(f"--- INITIALIZING DIJKSTRA OPTIMIZATION ---")
-    print(f"Grid: {N_RINGS} Rings x {N_ANGLES} Angles | Spacing: {RING_SPACING_KM}km")
+    print(f"--- INITIALIZING DIJKSTRA OPTIMIZATION (MERGED WEATHER) ---")
 
     # 1. GENERATE GRID
     print("Generating Grid...")
@@ -126,17 +79,15 @@ def main():
     )
     print(f"Grid Generated: {len(nodes)} nodes.")
 
-    # 2. BUILD GRAPH (Topology)
+    # 2. BUILD GRAPH
     print("Building Adjacency List...")
     graph = build_adjacency_list(
         node_coords=node_coords,
         n_rings=N_RINGS,
         n_angles=N_ANGLES,
-        # Pass dummy lambda because Solver calculates real cost dynamically
         edge_cost_fn=lambda a, b: 0.0
     )
 
-    # Simple connectivity check
     if len(graph) > 0:
         print(f"Graph built. Edges from AMS: {len(graph[0])}")
     else:
@@ -150,12 +101,12 @@ def main():
         adjacency_list=graph,
         node_coords=node_coords,
         start_node_id=0,
-        end_node_id=len(nodes) - 1,  # JFK is the last node
+        end_node_id=len(nodes) - 1,
         initial_weight_kg=INITIAL_WEIGHT_KG,
         start_time_sec=START_TIME_SEC,
         physics_engine_fn=physics_adapter,
-        wind_model_fn=wavy_wind_model,
-        time_bin_sec=TIME_BIN_SEC  # Passing the global setting
+        # wind_model_fn is removed here
+        time_bin_sec=TIME_BIN_SEC
     )
 
     # 4. SAVE RESULTS
@@ -174,7 +125,7 @@ def main():
                 lat, lon = node_coords[nid]
                 f.write(f"{lat}, {lon}\n")
 
-        print("Results saved to 'grid_waypoints_lonlat.txt' and 'solution_path.txt'")
+        print("Results saved.")
     else:
         print("\nOptimization Failed: No path found.")
 
