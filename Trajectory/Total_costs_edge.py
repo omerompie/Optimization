@@ -6,20 +6,23 @@ Als laatste is er de functie get_edge_costs. Dit is 1 functie waarbij alle vorig
 de kosten van 1 edge te berekenen. Dit is handiger want zo hoef je maar in de trajectory costs berekening
 naar 1 functie uit dit bestand te callen.
 """
-
 from Edge_calculation.vinc import v_direct
 import math
 from dataframe_filtering.Fuel_Flow_bepalen_aan_de_hand_van_gewicht import get_fuel_flow
 import pandas as pd
 from src.ansp import get_ansp_cost_for_edge
 from weather.weather_model import get_wind_kmh
+import os
 
-df = pd.read_csv('wind_for_coordinates.csv')
+# --- PATH FIXES ---
+current_dir = os.path.dirname(os.path.abspath(__file__))
 
+# 1. WIND CSV: Pointing to the 'weather' folder (One level up, then into weather)
+wind_csv_path = os.path.join(current_dir, '..', 'weather', 'wind_for_coordinates.csv')
+df = pd.read_csv(wind_csv_path)
 
-u_table = df.pivot(index='time_hours', columns='waypoint_id', values='u_speed_ms').sort_index() #make a table for the x wind on every hour
-v_table = df.pivot(index='time_hours', columns='waypoint_id', values='v_speed_ms').sort_index() #make a table for the y wind on every hour
-
+u_table = df.pivot(index='time_hours', columns='waypoint_id', values='u_speed_ms').sort_index()
+v_table = df.pivot(index='time_hours', columns='waypoint_id', values='v_speed_ms').sort_index()
 
 
 
@@ -38,7 +41,10 @@ t_max = T_MAX
 """
 Our aircraft Performance database with weight and fuel flow converted into a list
 """
-df = pd.read_csv('Aircraft_1_filtered.csv')
+# 2. AIRCRAFT CSV: Pointing to THIS 'Trajectory' folder
+ac1_csv_path = os.path.join(current_dir, 'Aircraft_1_filtered.csv')
+df = pd.read_csv(ac1_csv_path)
+
 weight_table = df["Gross_Weight"].tolist()
 ff_table = df["fuel_flow"].tolist()
 

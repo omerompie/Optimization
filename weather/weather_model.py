@@ -4,7 +4,15 @@ import pandas as pd
 import math
 
 
-df = pd.read_csv('wind_for_coordinates.csv')
+import os
+import pandas as pd
+
+# FIX: Get directory of THIS file (weather/weather_model.py)
+current_dir = os.path.dirname(os.path.abspath(__file__))
+# Target the CSV in the SAME folder
+csv_path = os.path.join(current_dir, 'wind_for_coordinates.csv')
+
+df = pd.read_csv(csv_path)
 
 """
 for interpolation by time, we have to make tables with time as rows and the coordinates as values for x and y wind

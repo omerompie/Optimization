@@ -1,7 +1,22 @@
 import pandas as pd
 
+
+import pandas as pd
+import os
+
+# FIX: Get directory of THIS file (dataframe_filtering/)
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Target CSV in 'Trajectory' (Up one level, then into Trajectory)
+ac2_path = os.path.join(current_dir, '..', 'Trajectory', 'Aircraft_2_filtered.csv')
+
+# If the code also reads Aircraft 1, fix that path too:
+# ac1_path = os.path.join(current_dir, '..', 'Trajectory', 'Aircraft_1_filtered.csv')
+
+df2 = pd.read_csv(ac2_path)
+
 df = pd.read_csv('Aircraft_1_filtered.csv')
-df2 = pd.read_csv('Aircraft_2_filtered.csv')
+#df2 = pd.read_csv('Aircraft_2_filtered.csv')
 
 weight_table = df["Gross_Weight"].tolist() #for interpolation and extrapolation
 ff_table = df["fuel_flow"].tolist() #for interpolation and extrapolation
