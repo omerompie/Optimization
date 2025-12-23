@@ -9,6 +9,8 @@ FUEL_COSTS_PER_KG = 0.683125 #fuel kosts for 1 kg fuel burn
 WEIGHT_START_CRUISE = 257743 #weight in kilos at the start of the cruise
 FUEL_BURN_MAX = 62600 #maximum amount of fuel burn for the cruise based on aircraft data
 MIN_WEIGHT = 195143
+T_MAX = 9.0
+t_max = T_MAX
 #TIME_MAX = TO BE DETERMINED
 
 from Bee_Colony.random_or_mutate_trajectory import RandomTrajectory
@@ -167,7 +169,6 @@ print(f'The total fuel burn on this trajectory is {total_fuel:.0f} kg')
 print(f'The total time for this trajectory is {total_time:.2f} hours')
 print(f'The total costs for this is trajectory are {BestCost:.0f} euros')
 print(f'The total weight of the aircraft is {total_weight:.0f} kilos. This is {remaining_weight:.0f} kilos above the minimum weight')
-
 
 """
 To be honest, the following has been made by chat gpt because i couldn't figure out how to make
