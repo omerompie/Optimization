@@ -9,9 +9,10 @@ FUEL_COSTS_PER_KG = 0.683125 #fuel kosts for 1 kg fuel burn
 WEIGHT_START_CRUISE = 257743 #weight in kilos at the start of the cruise
 FUEL_BURN_MAX = 62600 #maximum amount of fuel burn for the cruise based on aircraft data
 MIN_WEIGHT = 195143
-T_MAX = 9.0
-t_max = T_MAX
-#TIME_MAX = TO BE DETERMINED
+T_MAX = 7.5
+T_MIN = 7.0
+t_max = 9.0 #this is for interpolation of weather
+
 
 from Bee_Colony.random_or_mutate_trajectory import RandomTrajectory
 from Bee_Colony.random_or_mutate_trajectory import MutateSolution

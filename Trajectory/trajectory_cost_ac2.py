@@ -12,7 +12,8 @@ MACH_AIRCRAFT_2 = 0.81 #the speed at which aircraft 2 flies with maximum efficie
 FUEL_COSTS_PER_KG = 0.683125 #fuel kosts for 1 kg fuel burn
 WEIGHT_START_CRUISE = 257743 #weight in kilos at the start of the cruise
 FUEL_BURN_MAX = 62600 #maximum amount of fuel burn for the cruise based on aircraft data
-#TIME_MAX = TO BE DETERMINED
+TIME_MAX = 7.5
+TIME_MIN = 7.0
 
 """
 Now it's time to calculate the cost of a whole trajectory 
@@ -56,6 +57,11 @@ def get_trajectory_cost_ac2(
 
     if total_fuel > FUEL_BURN_MAX:
         total_cost += 1e12 * (total_fuel - FUEL_BURN_MAX) #penaly relative to how much you are above your maximum fuel burn
+
+    if total_time < TIME_MIN:
+        total_cost += 1e12 * (TIME_MIN - total_time) #penaly relative to how much you are under your minimum time
+    if total_time > TIME_MAX:
+        total_cost += 1e12 * (total_time - TIME_MAX) #penaly relative to how much you are above your maximum time
     return (total_cost, total_fuel, total_time, weight)
 
 
