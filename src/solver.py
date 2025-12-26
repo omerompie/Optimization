@@ -10,16 +10,17 @@ def solve_dynamic_dijkstra(
         initial_weight_kg,
         start_time_sec,
         physics_engine_fn,
-        # wind_model_fn is REMOVED. The physics engine handles it internally now.
-        time_bin_sec=100.0
+        time_bin_sec=100.0,
+        target_time_sec=None,  # Optional: Scheduled Time of Arrival
+        penalty_per_hour=0.0  # Optional: Cost per hour deviation
 ):
     """
-    Solves the trajectory using Implicit Dijkstra.
-    Now passes Node ID to physics engine for Table Lookup Weather models.
+    Solves trajectory with optional Time of Arrival (ToA) Penalty.
     """
 
     # 1. INITIALIZATION
     priority_queue = []
+    # (Cost, Node, Time, Weight)
     heapq.heappush(priority_queue, (0.0, start_node_id, start_time_sec, initial_weight_kg))
 
     best_states = {}
@@ -28,7 +29,7 @@ def solve_dynamic_dijkstra(
 
     nodes_visited = 0
 
-    print("Starting Implicit Dijkstra Search (logging history)...")
+    print("Starting Implicit Dijkstra Search...")
 
     with open("search_history.txt", "w") as history_file:
 
@@ -39,12 +40,33 @@ def solve_dynamic_dijkstra(
 
             # --- STEP A: GOAL CHECK ---
             if u == end_node_id:
-                print(f"Path found! Checked {nodes_visited} states.")
-                print(
-                    f"Final Cost: €{current_cost:.2f}, Time: {current_time / 3600:.2f}h, Fuel Left: {current_weight:.0f}kg")
+                actual_hours = current_time / 3600.0
+
+                print("-" * 40)
+                print(f"PATH FOUND! (Checked {nodes_visited} states)")
+                print("-" * 40)
+                print(f"Actual Flight Time: {actual_hours:.4f} hours")
+
+                # Detailed Report if Penalty was active
+                if target_time_sec:
+                    target_hours = target_time_sec / 3600.0
+                    diff_hours = actual_hours - target_hours
+                    penalty_amount = abs(diff_hours) * penalty_per_hour
+
+                    print(f"Target Flight Time: {target_hours:.4f} hours")
+                    print(f"Deviation:          {diff_hours:+.4f} hours")
+                    print(f"Penalty Applied:    €{penalty_amount:.2f}")
+                else:
+                    print("Constraint:         None (Fastest/Cheapest found)")
+
+                print("-" * 40)
+                print(f"FINAL TOTAL COST:   €{current_cost:.2f}")
+                print(f"Fuel Remaining:     {current_weight:.0f} kg")
+                print("-" * 40)
+
                 return reconstruct_path(came_from, (u, current_time, current_weight)), current_cost
 
-            # --- STEP B: PRUNING ---
+            # --- STEP B: PRUNING (Pareto) ---
             t_bin = int(current_time / time_bin_sec)
             state_key = (u, t_bin)
 
@@ -75,16 +97,13 @@ def solve_dynamic_dijkstra(
             for neighbor_info in adjacency_list[u]:
                 v = neighbor_info[0] if isinstance(neighbor_info, tuple) else neighbor_info
 
-                # --- CRITICAL UPDATE FOR WEATHER INTEGRATION ---
-                # We now pass 'u' (the Node ID) so the physics engine can lookup CSV data.
-                # We removed 'wind_model' because it is hardcoded in the Trajectory file now.
-
+                # 1. CALCULATE PHYSICS
                 fuel_burn, segment_time_h, segment_cost = physics_engine_fn(
-                    u_id=u,  # <--- NEW: Passing the ID
+                    u_id=u,
                     waypoint_i=node_coords[u],
                     waypoint_j=node_coords[v],
                     current_weight_kg=current_weight,
-                    current_time=(current_time / 3600.0)  # Correct time passed here
+                    current_time=(current_time / 3600.0)
                 )
 
                 new_cost = current_cost + segment_cost
@@ -94,6 +113,13 @@ def solve_dynamic_dijkstra(
                 if new_weight < 0:
                     continue
 
+                # 2. APPLY TOA PENALTY (Only if entering the Goal Node)
+                if v == end_node_id and target_time_sec is not None:
+                    diff_hours = abs(new_time - target_time_sec) / 3600.0
+                    penalty = diff_hours * penalty_per_hour
+                    new_cost += penalty
+
+                # 3. PUSH TO QUEUE
                 new_state_id = (v, new_time, new_weight)
                 current_state_id = (u, current_time, current_weight)
                 came_from[new_state_id] = current_state_id
