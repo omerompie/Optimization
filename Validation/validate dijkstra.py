@@ -1,0 +1,84 @@
+import sys
+import os
+
+# --- PATH SETUP ---
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
+sys.path.append(parent_dir)
+
+from src.grid import generate_grid, build_adjacency_list
+from src.solver import solve_dynamic_dijkstra
+from Trajectory.Total_costs_edge import get_edge_cost
+
+# ==========================================
+#      1. CONFIGURATION (MUST MATCH BRUTE FORCE)
+# ==========================================
+SCHIPHOL = (52.308056, 4.764167)
+JFK = (40.641766, -73.780968)
+
+N_RINGS = 8  # MATCHED with Brute Force
+N_ANGLES = 3  # MATCHED with Brute Force
+RING_SPACING_KM = 200.0
+MAX_WIDTH_KM = 500.0
+BASE_WIDTH_M = 40000.0
+INITIAL_WEIGHT_KG = 257743.0
+START_TIME_SEC = 0.0
+
+
+# ==========================================
+#      2. PHYSICS ADAPTER
+# ==========================================
+def physics_adapter(u_id, waypoint_i, waypoint_j, current_weight_kg, current_time):
+    return get_edge_cost(
+        waypoint_i=waypoint_i,
+        waypoint_j=waypoint_j,
+        waypoint_i_id=u_id,
+        current_weight_kg=current_weight_kg,
+        current_time=current_time
+    )
+
+
+# ==========================================
+#      3. MAIN EXECUTION
+# ==========================================
+def main():
+    print(f"\n--- DIJKSTRA VALIDATION (MICRO-WORLD) ---")
+    print(f"Grid Settings: {N_RINGS} Rings x {N_ANGLES} Angles")
+
+    # 1. Generate Mini Grid
+    nodes, node_coords = generate_grid(SCHIPHOL, JFK, N_RINGS, N_ANGLES, RING_SPACING_KM, MAX_WIDTH_KM, BASE_WIDTH_M)
+    graph = build_adjacency_list(node_coords, N_RINGS, N_ANGLES, lambda a, b: 0.0)
+    end_node_id = len(nodes) - 1
+
+    print(f"Graph Built: {len(nodes)} nodes total.")
+    print("Running Dijkstra Solver...")
+
+    # 2. Run Solver
+    # Note: We disable ToA Penalty here (target_time_sec=None) to match Brute Force's logic
+    # of finding the pure cheapest path.
+    path, cost = solve_dynamic_dijkstra(
+        adjacency_list=graph,
+        node_coords=node_coords,
+        start_node_id=0,
+        end_node_id=end_node_id,
+        initial_weight_kg=INITIAL_WEIGHT_KG,
+        start_time_sec=START_TIME_SEC,
+        physics_engine_fn=physics_adapter,
+        time_bin_sec=100.0,
+        target_time_sec=None,  # Disabled for raw comparison
+        penalty_per_hour=0.0
+    )
+
+    # 3. Report Results
+    print("\n" + "=" * 40)
+    print("       DIJKSTRA RESULTS       ")
+    print("=" * 40)
+    # We don't have "total paths checked" in Dijkstra because it skips paths.
+    # Instead, we look at the Optimal Cost to verify it matches Brute Force.
+    print(f"Optimal Total Cost:    €{cost:,.2f}")
+    print(f"Optimal Path Nodes:    {path}")
+    print("=" * 40 + "\n")
+
+
+if __name__ == "__main__":
+    main()

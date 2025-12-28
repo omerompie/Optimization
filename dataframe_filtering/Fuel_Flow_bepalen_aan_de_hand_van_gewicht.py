@@ -1,28 +1,25 @@
 import pandas as pd
-
-
-import pandas as pd
 import os
 
-# FIX: Get directory of THIS file (dataframe_filtering/)
+# --- PATH FIX: ALWAYS LOOK IN TRAJECTORY FOLDER ---
+# 1. Get the folder where THIS python file lives
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
-# Target CSV in 'Trajectory' (Up one level, then into Trajectory)
-ac2_path = os.path.join(current_dir, '..', 'Trajectory', 'Aircraft_2_filtered.csv')
+# 2. Construct the path to the CSVs (Go up one level, then down into Trajectory)
+path_ac1 = os.path.join(current_dir, '..', 'Trajectory', 'Aircraft_1_filtered.csv')
+path_ac2 = os.path.join(current_dir, '..', 'Trajectory', 'Aircraft_2_filtered.csv')
 
-# If the code also reads Aircraft 1, fix that path too:
-# ac1_path = os.path.join(current_dir, '..', 'Trajectory', 'Aircraft_1_filtered.csv')
+# 3. Read using the absolute paths
+df = pd.read_csv(path_ac1)
+df2 = pd.read_csv(path_ac2)
 
-df2 = pd.read_csv(ac2_path)
-
-df = pd.read_csv('Aircraft_1_filtered.csv')
-#df2 = pd.read_csv('Aircraft_2_filtered.csv')
-
-weight_table = df["Gross_Weight"].tolist() #for interpolation and extrapolation
-ff_table = df["fuel_flow"].tolist() #for interpolation and extrapolation
+weight_table = df["Gross_Weight"].tolist()
+ff_table = df["fuel_flow"].tolist()
 
 weight_table2 = df2['weight'].tolist()
 ff_table2 = df2['FF'].tolist()
+
+# ... (Keep the rest of the functions below as they are) ...
 
 def get_fuel_flow(weight, weight_table, ff_table):
 
