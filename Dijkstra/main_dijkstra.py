@@ -6,7 +6,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
 sys.path.append(parent_dir)
 
-from src.grid import generate_grid, build_adjacency_list
+from src.test import generate_grid, build_adjacency_list
 from src.solver import solve_dynamic_dijkstra
 from Trajectory.Total_costs_edge import get_edge_cost
 
