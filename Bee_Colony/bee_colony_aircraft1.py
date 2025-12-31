@@ -1,5 +1,5 @@
-POPULATION_SIZE = 50 #voor nu klein zodat we snel antwoord krijgen, kan opgeschaald worden
-MAX_ITERATIONS = 150 #zelfde als voor pupulation: klein voor nu
+POPULATION_SIZE = 10 #voor nu klein zodat we snel antwoord krijgen, kan opgeschaald worden
+MAX_ITERATIONS = 50 #zelfde als voor pupulation: klein voor nu
 LIMIT = 50 #zelfde als voor population: klein voor nu
 TEMPERATURE_HEIGHT = 288.15 - ((34000 * 0.3048) * 0.0065) #temperature at our fixed flight altitude of 34,0000 feet
 COST_OF_TIME_INDEX = 35 #associated operating costs, expressed in kg fuel burn per hour
