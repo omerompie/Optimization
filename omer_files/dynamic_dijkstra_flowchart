@@ -1,0 +1,69 @@
+// Dynamic Dijkstra Flowchart
+digraph {
+	rankdir=TB size="8,12"
+	node [fillcolor="#E3F2FD" fontname=Arial shape=box style=filled]
+	Start [label="START
+Initialize Priority Queue
+(cost=0, start_node, start_time, initial_weight)" fillcolor="#C8E6C9" shape=oval]
+	QueueCheck [label="Is Priority Queue Empty?" fillcolor="#FFE0B2" shape=diamond]
+	NoPath [label="No Path Found
+(Return Failure)" fillcolor="#FFCDD2" shape=oval]
+	Pop [label="Pop Lowest-Cost State
+(cost, u, time, weight)"]
+	GoalCheck [label="Is u == Destination?" fillcolor="#FFE0B2" shape=diamond]
+	End [label="Reconstruct Path & Return
+(Final cost already includes
+ToA penalty if enabled)" fillcolor="#A5D6A7" shape=oval]
+	TimeBin [label="Discretize Time
+Compute time_bin = floor(time / Δt)"]
+	Pruning [label="Is State Dominated?
+(Compare cost & remaining fuel
+at same node and time_bin)" fillcolor="#FFCDD2" shape=diamond]
+	DiscardDominated [label="Discard State
+(Dominated)" fillcolor="#EF9A9A" shape=oval]
+	UpdatePareto [label="Update Pareto Frontier
+Remove states dominated
+by current state"]
+	Expand [label="For Each Neighbor v
+in Adjacency List"]
+	Physics [label="Physics Engine
+• Compute wind at time
+• Calculate fuel burn
+• Calculate segment time
+• Calculate segment cost"]
+	CalcNewState [label="Compute New State
+new_cost = cost + segment_cost
+new_weight = weight − fuel_burn
+new_time = time + segment_time"]
+	Feasible [label="Is new_weight ≥ 0?" fillcolor="#FFCDD2" shape=diamond]
+	SkipNeighbor [label="Skip Neighbor
+(Infeasible)" fillcolor="#EF9A9A" shape=oval]
+	ApplyPenalty [label="If v == Destination AND
+Target Time Exists:
+Apply ToA Penalty to cost"]
+	Push [label="Push New State to Queue
+(new_cost, v, new_time, new_weight)
+Update came_from"]
+	NextNeighbor [label="More Neighbors?" fillcolor="#FFE0B2" shape=diamond]
+	Start -> QueueCheck
+	QueueCheck -> Pop [label=No]
+	QueueCheck -> NoPath [label=Yes]
+	Pop -> GoalCheck
+	GoalCheck -> End [label=Yes]
+	GoalCheck -> TimeBin [label=No]
+	TimeBin -> Pruning
+	Pruning -> DiscardDominated [label=Yes]
+	DiscardDominated -> QueueCheck [label="Loop Back" style=dashed]
+	Pruning -> UpdatePareto [label=No]
+	UpdatePareto -> Expand
+	Expand -> Physics
+	Physics -> CalcNewState
+	CalcNewState -> Feasible
+	Feasible -> SkipNeighbor [label=No]
+	Feasible -> ApplyPenalty [label=Yes]
+	ApplyPenalty -> Push
+	Push -> NextNeighbor
+	SkipNeighbor -> NextNeighbor [style=dashed]
+	NextNeighbor -> Expand [label=Yes style=dashed]
+	NextNeighbor -> QueueCheck [label=No style=dashed]
+}
