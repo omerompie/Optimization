@@ -12,6 +12,8 @@ import math
 from dataframe_filtering.Fuel_Flow_bepalen_aan_de_hand_van_gewicht import get_fuel_flow_ac2
 import pandas as pd
 from src.ansp import get_ansp_cost_for_edge
+from weather.weather_model import get_wind_kmh
+
 
 """
 Our fixed variables are listed below
@@ -23,6 +25,8 @@ MACH_AIRCRAFT_1 = 0.82 #the speed at which aircraft 1 flies with maximum efficie
 MACH_AIRCRAFT_2 = 0.81 #the speed at which aircraft 2 flies with maximum efficiency
 FUEL_COSTS_PER_KG = 0.683125 #fuel kosts for 1 kg fuel burn
 WEIGHT_START_CRUISE = 257743 #weight in kilos at the start of the cruise
+T_MAX = 9.0
+t_max = T_MAX
 
 """
 Our aircraft Performance database with weight and fuel flow converted into a list
@@ -108,8 +112,8 @@ Now we combine the previous functions
 def get_edge_cost_ac2(
     waypoint_i, #the first waypoint
     waypoint_j, #the second waypoint
+    waypoint_i_id,
     current_weight_kg, #the current weight. Later used in trajectory costs. at the start of the cruise this is 257743
-    wind_model=None,
     current_time=None, #set a default for calculating examples of random edges where there is no current time. in the trajectory costs there is a variable current time and then this statement expires
 
 #Rishaad has to create the wind model. we have to make a function which gives the speed and direction of
@@ -122,14 +126,7 @@ def get_edge_cost_ac2(
 
     heading_deg = get_heading(waypoint_i, waypoint_j) #calculate the heading with the function
 
-    #Here comes the  wind, but as said, we still have to investigate it
-    if wind_model is None: #which is the case now where we have no wind
-        head_tail_kmh = 0.0
-    else:
-        position = waypoint_i #we define the wind speed and heading with the weather scenario based on the start of the edge (waypoint i)
-
-        wind_heading, wind_speed_kts = wind_model(position, current_time) #we call the function, but as said, the function still has to be created
-        head_tail_kmh = get_wind(heading_deg, wind_heading, wind_speed_kts) #calculate the head or tail wind with the function
+    head_tail_kmh = get_wind_kmh(waypoint_i_id, current_time, heading_deg) #calculate the head or tail wind with the function
 
     ground_speed_kmh = get_ground_speed(MACH_AIRCRAFT_2, TEMPERATURE_HEIGHT, head_tail_kmh)
     #calculate the ground speed with the function
@@ -149,17 +146,3 @@ def get_edge_cost_ac2(
     #Total cost of the edge. Here, the ANSP costs is missing. omer is still performing research on the topic.
     return fuel_burn_kg, time_h, total_cost_edge
 
-"""
-als jullie willen testen boys heb ik hier random variabelen opgeschreven. heb zelf al getest en hij werkt
-
-
-waypoint_i = (52.308056, 4.764167)
-waypoint_j = (52.57845370868331, 1.856151430826293)
-current_weight_kg = WEIGHT_START_CRUISE
-
-fuel_burn_kg, time_h, cost_eur = get_edge_cost_ac2(waypoint_i, waypoint_j, current_weight_kg)
-
-print(f'The total fuel burn on this edge is {fuel_burn_kg:.0f} kg')
-print(f'The total time for this edge is {time_h:.2f} hours')
-print(f'The total costs for this is edge are {cost_eur:.0f} euros')
-"""
