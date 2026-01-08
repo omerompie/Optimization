@@ -12,7 +12,7 @@ MACH_AIRCRAFT_2 = 0.81 #the speed at which aircraft 2 flies with maximum efficie
 FUEL_COSTS_PER_KG = 0.683125 #fuel kosts for 1 kg fuel burn
 WEIGHT_START_CRUISE = 257743 #weight in kilos at the start of the cruise
 FUEL_BURN_MAX = 62600 #maximum amount of fuel burn for the cruise based on aircraft data
-TIME_MAX = 7.5
+TIME_MAX = 8.0
 TIME_MIN = 7.0
 
 """
@@ -42,8 +42,8 @@ def get_trajectory_cost_ac2(
         fuel_ij, time_ij, cost_ij = get_edge_cost_ac2( #store the return of the function in fuel_ij, time_ij and cost_ij
             waypoint_i=wp_i,
             waypoint_j=wp_j,
+            waypoint_i_id=node_i,
             current_weight_kg=weight,
-            wind_model=wind_model,
             current_time=current_time, #link the variables needed for get_edge_cost to the right variables in this function
         ) #This is the edge calculation with the get_edge_cost. It does this for every edge by using the for loop
 
@@ -54,7 +54,6 @@ def get_trajectory_cost_ac2(
 
         weight -= fuel_ij #for every iteration, substract the fuel burn from the weight so that the next iteration uses an updated weight
         current_time += time_ij #actually the same as th total time, but this variable will be used for the weather model to define the weather at that exact timestamp
-
     if total_fuel > FUEL_BURN_MAX:
         total_cost += 1e12 * (total_fuel - FUEL_BURN_MAX) #penaly relative to how much you are above your maximum fuel burn
 
@@ -62,6 +61,7 @@ def get_trajectory_cost_ac2(
         total_cost += 1e12 * (TIME_MIN - total_time) #penaly relative to how much you are under your minimum time
     if total_time > TIME_MAX:
         total_cost += 1e12 * (total_time - TIME_MAX) #penaly relative to how much you are above your maximum time
+
     return (total_cost, total_fuel, total_time, weight)
 
 

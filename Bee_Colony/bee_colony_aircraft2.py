@@ -1,5 +1,5 @@
-POPULATION_SIZE = 50 #voor nu klein zodat we snel antwoord krijgen, kan opgeschaald worden
-MAX_ITERATIONS = 150 #zelfde als voor pupulation: klein voor nu
+POPULATION_SIZE = 10 #voor nu klein zodat we snel antwoord krijgen, kan opgeschaald worden
+MAX_ITERATIONS = 50 #zelfde als voor pupulation: klein voor nu
 LIMIT = 50 #zelfde als voor population: klein voor nu
 TEMPERATURE_HEIGHT = 288.15 - ((34000 * 0.3048) * 0.0065) #temperature at our fixed flight altitude of 34,0000 feet
 COST_OF_TIME_INDEX = 35 #associated operating costs, expressed in kg fuel burn per hour
@@ -9,7 +9,9 @@ FUEL_COSTS_PER_KG = 0.683125 #fuel kosts for 1 kg fuel burn
 WEIGHT_START_CRUISE = 257743 #weight in kilos at the start of the cruise
 FUEL_BURN_MAX = 62600 #maximum amount of fuel burn for the cruise based on aircraft data
 MIN_WEIGHT = 195143
-#TIME_MAX = TO BE DETERMINED
+T_MAX = 7.0
+T_MIN = 8.0
+t_max = 9.0 #this is for interpolation of weather
 
 from Bee_Colony.random_or_mutate_trajectory import RandomTrajectory
 from Bee_Colony.random_or_mutate_trajectory import MutateSolution
