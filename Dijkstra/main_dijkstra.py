@@ -32,7 +32,7 @@ TIME_BIN_SEC = 100.0
 
 # --- D. TIME OF ARRIVAL (ToA) CONSTRAINTS ---
 # Set this to FALSE if you want pure cheapest/fastest route without penalty
-ENABLE_TOA_PENALTY = True
+ENABLE_TOA_PENALTY = False
 
 SCHEDULED_TIME_HOURS = 8.0  # Target: Arrive in exactly 8.00 hours
 PENALTY_COST_PER_HOUR = 50000.0

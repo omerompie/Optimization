@@ -110,7 +110,7 @@ def solve_dynamic_dijkstra(
                 new_weight = current_weight - fuel_burn
                 new_time = current_time + (segment_time_h * 3600.0)
 
-                if new_weight < 0:
+                if new_weight < 0:   # Fix this. (Not good assumption).
                     continue
 
                 # 2. APPLY TOA PENALTY (Only if entering the Goal Node)

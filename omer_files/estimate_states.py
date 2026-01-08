@@ -4,11 +4,11 @@ def calculate_prediction():
     # ==========================================
 
     # Grid Configuration (From main.py)
-    TARGET_RINGS = 60  # Default: 29
-    TARGET_ANGLES = 40  # Default: 21
+    TARGET_RINGS = 29  # Default: 29
+    TARGET_ANGLES = 21  # Default: 21
 
     # Solver Configuration
-    TARGET_PRUNE_TIME = 10.0  # Default: 100.0 (seconds)
+    TARGET_PRUNE_TIME = 0.1  # Default: 100.0 (seconds)
 
     # ==========================================
     # 2. BASELINE DATA (DO NOT CHANGE)
