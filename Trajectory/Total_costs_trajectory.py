@@ -24,7 +24,6 @@ Now it's time to calculate the cost of a whole trajectory
 def get_trajectory_cost(
     trajectory, #dit moet een lijst zijn van alle nodes. elke node moet een 'identificatie' hebben
     node_coordinates, #dit moet een dictionary zijn met alle node identificaties met hun bijbehorende coordinaten
-    wind_model=None, #omdat we nu nog geen wind model hebben zet ik hem op none
     t_start = 0.0, #we start the cruise at t = 0 hours of course
 ):
 
@@ -32,7 +31,7 @@ def get_trajectory_cost(
     total_cost = 0.0
     total_fuel = 0.0
     total_time = 0.0 #set all the end variables we want to know at zero. ANSP costs should be included here as well but Omer is still investigating it
-    current_time = t_start #we start from 0
+    current_time = t_start
 
     for i in range(len(trajectory) - 1): #the loop is created to calculate the costs for all edges in the trajectory
         node_i = trajectory[i] #define node_i by node identification out of the trajectory list

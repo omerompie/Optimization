@@ -9,8 +9,8 @@ FUEL_COSTS_PER_KG = 0.683125 #fuel kosts for 1 kg fuel burn
 WEIGHT_START_CRUISE = 257743 #weight in kilos at the start of the cruise
 FUEL_BURN_MAX = 62600 #maximum amount of fuel burn for the cruise based on aircraft data
 MIN_WEIGHT = 195143
-T_MAX = 7.5
-T_MIN = 7.0
+T_MAX = 8.0
+T_MIN = 7.2
 t_max = 9.0 #this is for interpolation of weather
 T_START = 0.0
 
@@ -18,7 +18,7 @@ T_START = 0.0
 from Bee_Colony.random_or_mutate_trajectory import RandomTrajectory
 from Bee_Colony.random_or_mutate_trajectory import MutateSolution
 from main_tryout import build_graph
-from Trajectory.Total_costs_trajectory import get_trajectory_cost
+from Trajectory.trajectory_cost_ac2 import get_trajectory_cost_ac2
 from Bee_Colony.random_or_mutate_trajectory import select_index_by_probability
 import pandas as pd
 from pathlib import Path
@@ -56,7 +56,7 @@ def run_abc_once(
     # Maak NP random trajectories + cost evaluatie
     for i in range(NP):
         Solutions[i] = RandomTrajectory(start_node, goal_node, graph, n_rings=N_RINGS)
-        cost_euro, fuel_burn, time_h, weight_end = get_trajectory_cost(Solutions[i], node_coords, t_start=t_start)
+        cost_euro, fuel_burn, time_h, weight_end = get_trajectory_cost_ac2(Solutions[i], node_coords, t_start=t_start)
         Costs[i] = cost_euro
         Trials[i] = 0
 
@@ -78,7 +78,7 @@ def run_abc_once(
             current_cost = Costs[i]
 
             candidate_solution = MutateSolution(current_solution, graph, n_rings=N_RINGS)
-            candidate_cost, _, _, _ = get_trajectory_cost(candidate_solution, node_coords, t_start=t_start)
+            candidate_cost, _, _, _ = get_trajectory_cost_ac2(candidate_solution, node_coords, t_start=t_start)
 
             if candidate_cost < current_cost:
                 Solutions[i] = candidate_solution
@@ -115,7 +115,7 @@ def run_abc_once(
             base_cost = Costs[k]
 
             candidate_solution = MutateSolution(base_solution, graph, n_rings=N_RINGS)
-            candidate_cost, _, _, _ = get_trajectory_cost(candidate_solution, node_coords, t_start=t_start)
+            candidate_cost, _, _, _ = get_trajectory_cost_ac2(candidate_solution, node_coords, t_start=t_start)
 
             if candidate_cost < base_cost:
                 Solutions[k] = candidate_solution
@@ -139,7 +139,7 @@ def run_abc_once(
 
             if Trials[i] > Limit:
                 Solutions[i] = RandomTrajectory(start_node, goal_node, graph, n_rings=N_RINGS)
-                new_cost, _, _, _ = get_trajectory_cost(Solutions[i], node_coords, t_start=t_start)
+                new_cost, _, _, _ = get_trajectory_cost_ac2(Solutions[i], node_coords, t_start=t_start)
                 Costs[i] = new_cost
                 Trials[i] = 0
 
@@ -155,7 +155,7 @@ def run_abc_once(
     # ----------------------------
     # Final metrics for BestSolution
     # ----------------------------
-    best_cost_eur, best_fuel_kg, best_time_h, best_weight_end = get_trajectory_cost(BestSolution, node_coords, t_start=t_start)
+    best_cost_eur, best_fuel_kg, best_time_h, best_weight_end = get_trajectory_cost_ac2(BestSolution, node_coords, t_start=t_start)
 
     return BestSolution, float(best_cost_eur), float(best_fuel_kg), float(best_time_h), float(best_weight_end)
 
@@ -164,7 +164,7 @@ def main():
     nodes, node_coords, graph, N_RINGS, N_ANGLES = build_graph()
 
     # Jouw Optie A: map in huidige directory (Bee_Colony/total_costs_ac1_per_time)
-    OUT_DIR = Path("total_costs_ac1_per_time")
+    OUT_DIR = Path("total_costs_ac2_per_time")
     OUT_DIR.mkdir(parents=True, exist_ok=True)
 
     N_RUNS = 30
@@ -195,7 +195,7 @@ def main():
 
         df = pd.DataFrame(results)
 
-        csv_name = f"abc_costs_tstart_{t_start:.1f}.csv"
+        csv_name = f"abc_costs_ac2_tstart_{t_start:.1f}.csv"
         out_path = OUT_DIR / csv_name
         df.to_csv(out_path, index=False)
 

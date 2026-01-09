@@ -12,6 +12,7 @@ MIN_WEIGHT = 195143
 T_MAX = 7.5
 T_MIN = 7.0
 t_max = 9.0 #this is for interpolation of weather
+T_START = 0.0
 
 
 from Bee_Colony.random_or_mutate_trajectory import RandomTrajectory
