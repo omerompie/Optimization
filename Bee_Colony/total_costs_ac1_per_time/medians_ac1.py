@@ -1,4 +1,7 @@
 import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
 df = pd.read_csv('abc_costs_tstart_0.0.csv')
 df2 = pd.read_csv('abc_costs_tstart_0.1.csv')
 df3 = pd.read_csv('abc_costs_tstart_0.2.csv')
@@ -36,7 +39,36 @@ medians_ac1 = {
     "t_start_0.9": mean_ac_1_10,
     "t_start_1.0": mean_ac_1_11,
 }
-print(medians_ac1)
 
 
+from scipy import stats
+
+values = np.array(list(medians_ac1.values()), dtype=float)
+
+mu, sigma = values.mean(), values.std(ddof=1)
+#make a histogram
+plt.hist(values, bins=11, density=True, alpha=0.7, edgecolor="black")
+x = np.linspace(values.min(), values.max(), 400)
+plt.plot(x, stats.norm.pdf(x, mu, sigma), linewidth=2)
+
+plt.title("Histogram + normal distribution")
+plt.xlabel("value")
+plt.ylabel("density")
+plt.grid(True, alpha=0.3)
+plt.tight_layout()
+plt.show()
+
+
+
+fig = plt.figure(figsize=(6, 6))
+ax = fig.add_subplot(111)
+
+stats.probplot(values, dist="norm", plot=ax)  # Q–Q plot
+ax.set_title("Q–Q plot vs normaal")
+ax.grid(True, alpha=0.3)
+
+plt.show()
+
+stat, p = stats.shapiro(values)
+print(f"Shapiro-Wilk p-value = {p:.4f}")
 
