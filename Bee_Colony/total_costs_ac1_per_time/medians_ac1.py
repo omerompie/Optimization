@@ -40,7 +40,7 @@ medians_ac1 = {
     "t_start_1.0": mean_ac_1_11,
 }
 
-
+print(medians_ac1)
 from scipy import stats
 
 values = np.array(list(medians_ac1.values()), dtype=float)
