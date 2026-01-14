@@ -11,7 +11,7 @@ FUEL_BURN_MAX = 62600 #maximum amount of fuel burn for the cruise based on aircr
 MIN_WEIGHT = 195143
 T_MAX = 7.0
 T_MIN = 8.0
-t_max = 9.0 #this is for interpolation of weather
+t_max = 39.0 #this is for interpolation of weather
 
 from Bee_Colony.random_or_mutate_trajectory import RandomTrajectory
 from Bee_Colony.random_or_mutate_trajectory import MutateSolution

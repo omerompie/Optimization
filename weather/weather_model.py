@@ -1,4 +1,4 @@
-T_MAX = 9.0
+T_MAX = 39.0
 
 import pandas as pd
 import math

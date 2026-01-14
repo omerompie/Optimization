@@ -33,7 +33,7 @@ MACH_AIRCRAFT_1 = 0.82 #the speed at which aircraft 1 flies with maximum efficie
 MACH_AIRCRAFT_2 = 0.81 #the speed at which aircraft 2 flies with maximum efficiency
 FUEL_COSTS_PER_KG = 0.683125 #fuel kosts for 1 kg fuel burn
 WEIGHT_START_CRUISE = 257743 #weight in kilos at the start of the cruise
-T_MAX = 9.0
+T_MAX = 39.0
 t_max = T_MAX
 """
 Our aircraft Performance database with weight and fuel flow converted into a list
