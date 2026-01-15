@@ -1,6 +1,6 @@
-POPULATION_SIZE = 50 #voor nu klein zodat we snel antwoord krijgen, kan opgeschaald worden
-MAX_ITERATIONS = 150 #zelfde als voor pupulation: klein voor nu
-LIMIT = 50 #zelfde als voor population: klein voor nu
+POPULATION_SIZE = 20 #voor nu klein zodat we snel antwoord krijgen, kan opgeschaald worden
+MAX_ITERATIONS = 100 #zelfde als voor pupulation: klein voor nu
+LIMIT = 20 #zelfde als voor population: klein voor nu
 TEMPERATURE_HEIGHT = 288.15 - ((34000 * 0.3048) * 0.0065) #temperature at our fixed flight altitude of 34,0000 feet
 COST_OF_TIME_INDEX = 35 #associated operating costs, expressed in kg fuel burn per hour
 MACH_AIRCRAFT_1 = 0.82 #the speed at which aircraft 1 flies with maximum efficiency
@@ -20,6 +20,8 @@ from Bee_Colony.random_or_mutate_trajectory import MutateSolution
 from main_tryout import build_graph
 from Trajectory.Total_costs_trajectory import get_trajectory_cost
 from Bee_Colony.random_or_mutate_trajectory import select_index_by_probability
+import numpy as np
+
 
 
 
@@ -37,7 +39,7 @@ NumIter = MAX_ITERATIONS
 Limit = LIMIT
 start_node = 0
 goal_node = 610
-
+rng = np.random.default_rng(123) #this is a seed
 """
 Initialization
 """
@@ -48,7 +50,7 @@ Trials = [0] * NP #make a list with the length of NP. All the values of Trials w
 Prob = [0.0] * NP #make a list with the length of NP. All the Prob of solutions will come into this list
 
 for i in range(NP):
-    Solutions[i] = RandomTrajectory(start_node, goal_node, graph, n_rings=N_RINGS)
+    Solutions[i] = RandomTrajectory(start_node, goal_node, graph, n_rings=N_RINGS, rng=rng)
     cost_euro, fuel_burn, time_s, weight = get_trajectory_cost(Solutions[i], Node_coordinates) #when we have the wind model, insert it between the brackets)
     Costs[i] = cost_euro
     Trials[i] = 0
@@ -75,7 +77,7 @@ while iteration < NumIter: #start of the headloop
         current_solution = Solutions[i]
         current_costs = Costs[i]
 
-        candidate_solution = MutateSolution(current_solution, graph, n_rings=N_RINGS)
+        candidate_solution = MutateSolution(current_solution, graph, n_rings=N_RINGS, rng=rng)
         candidate_costs, _, _, _ = get_trajectory_cost(candidate_solution, Node_coordinates)
 
         if candidate_costs < current_costs:
@@ -109,12 +111,12 @@ while iteration < NumIter: #start of the headloop
         Prob = [ai / SumA for ai in a] #divide every a ranking by the sum to get the probability and store them in a list
 
     for onlooker in range(NP):
-        k = select_index_by_probability(Prob) #the function returns the index based on the roulette wheel and is a random tajectory
+        k = select_index_by_probability(Prob, rng=rng) #the function returns the index based on the roulette wheel and is a random tajectory
 
         base_solution = Solutions[k] #this is the trajectory with index k
         base_cost = Costs[k] #associated costs
 
-        candidate_solution = MutateSolution(base_solution, graph, n_rings=N_RINGS) #make a mutation
+        candidate_solution = MutateSolution(base_solution, graph, n_rings=N_RINGS, rng=rng) #make a mutation
         candidate_cost, _, _, _ = get_trajectory_cost(candidate_solution, Node_coordinates) #calculate the costs of this mutation
 
         if candidate_cost < base_cost:
@@ -142,7 +144,7 @@ while iteration < NumIter: #start of the headloop
             #so I don't want that to be thrown away
 
         if Trials[i] > LIMIT:
-            Solutions[i] = RandomTrajectory(start_node, goal_node, graph, n_rings=N_RINGS) #make a new random trajectory
+            Solutions[i] = RandomTrajectory(start_node, goal_node, graph, n_rings=N_RINGS, rng=rng) #make a new random trajectory
             new_costs, _, _, _ = get_trajectory_cost(Solutions[i], Node_coordinates)
             Costs[i] = new_costs
             Trials[i] = 0

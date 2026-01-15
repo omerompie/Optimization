@@ -1,6 +1,6 @@
 POPULATION_SIZE = 10 #voor nu klein zodat we snel antwoord krijgen, kan opgeschaald worden
-MAX_ITERATIONS = 150 #zelfde als voor pupulation: klein voor nu
-LIMIT = 50 #zelfde als voor population: klein voor nu
+MAX_ITERATIONS = 50 #zelfde als voor pupulation: klein voor nu
+LIMIT = 10
 TEMPERATURE_HEIGHT = 288.15 - ((34000 * 0.3048) * 0.0065) #temperature at our fixed flight altitude of 34,0000 feet
 COST_OF_TIME_INDEX = 35 #associated operating costs, expressed in kg fuel burn per hour
 MACH_AIRCRAFT_1 = 0.82 #the speed at which aircraft 1 flies with maximum efficiency
@@ -11,7 +11,7 @@ FUEL_BURN_MAX = 62600 #maximum amount of fuel burn for the cruise based on aircr
 MIN_WEIGHT = 195143
 T_MAX = 7.5
 T_MIN = 7.0
-t_max = 9.0 #this is for interpolation of weather
+t_max = 39.0 #this is for interpolation of weather
 T_START = 0.0
 
 
@@ -22,6 +22,9 @@ from Trajectory.Total_costs_trajectory import get_trajectory_cost
 from Bee_Colony.random_or_mutate_trajectory import select_index_by_probability
 import pandas as pd
 from pathlib import Path
+import numpy as np
+import time
+
 
 
 def run_abc_once(
@@ -31,19 +34,12 @@ def run_abc_once(
     t_start,
     start_node=0,
     goal_node=610,
-    NP=10,
-    NumIter=50,
-    Limit=50,
+    NP=POPULATION_SIZE,
+    NumIter=MAX_ITERATIONS,
+    Limit=LIMIT,
+    seed=None
 ):
-    """
-    Doet 1 run van jouw Artificial Bee Colony (ABC).
-    Retourneert:
-      best_solution (list),
-      best_cost_eur (float),
-      best_fuel_kg (float),
-      best_time_h (float),
-      best_end_weight_kg (float)
-    """
+    rng = np.random.default_rng(seed) #this is the seed
 
     # ----------------------------
     # Initialization
@@ -55,7 +51,7 @@ def run_abc_once(
 
     # Maak NP random trajectories + cost evaluatie
     for i in range(NP):
-        Solutions[i] = RandomTrajectory(start_node, goal_node, graph, n_rings=N_RINGS)
+        Solutions[i] = RandomTrajectory(start_node, goal_node, graph, n_rings=N_RINGS, rng=rng)
         cost_euro, fuel_burn, time_h, weight_end = get_trajectory_cost(Solutions[i], node_coords, t_start=t_start)
         Costs[i] = cost_euro
         Trials[i] = 0
@@ -77,7 +73,7 @@ def run_abc_once(
             current_solution = Solutions[i]
             current_cost = Costs[i]
 
-            candidate_solution = MutateSolution(current_solution, graph, n_rings=N_RINGS)
+            candidate_solution = MutateSolution(current_solution, graph, n_rings=N_RINGS, rng=rng)
             candidate_cost, _, _, _ = get_trajectory_cost(candidate_solution, node_coords, t_start=t_start)
 
             if candidate_cost < current_cost:
@@ -109,12 +105,12 @@ def run_abc_once(
             Prob = [ai / SumA for ai in a]
 
         for _ in range(NP):
-            k = select_index_by_probability(Prob)
+            k = select_index_by_probability(Prob, rng=rng)
 
             base_solution = Solutions[k]
             base_cost = Costs[k]
 
-            candidate_solution = MutateSolution(base_solution, graph, n_rings=N_RINGS)
+            candidate_solution = MutateSolution(base_solution, graph, n_rings=N_RINGS, rng=rng)
             candidate_cost, _, _, _ = get_trajectory_cost(candidate_solution, node_coords, t_start=t_start)
 
             if candidate_cost < base_cost:
@@ -138,7 +134,7 @@ def run_abc_once(
                 continue
 
             if Trials[i] > Limit:
-                Solutions[i] = RandomTrajectory(start_node, goal_node, graph, n_rings=N_RINGS)
+                Solutions[i] = RandomTrajectory(start_node, goal_node, graph, n_rings=N_RINGS, rng=rng)
                 new_cost, _, _, _ = get_trajectory_cost(Solutions[i], node_coords, t_start=t_start)
                 Costs[i] = new_cost
                 Trials[i] = 0
@@ -168,14 +164,15 @@ def main():
     OUT_DIR.mkdir(parents=True, exist_ok=True)
 
     N_RUNS = 30
-
-    # t_start: 0.0 t/m 1.0 in stappen van 0.1
-    t_starts = [round(i * 0.1, 1) for i in range(0, 11)]
+    BASE_SEED = 10000
+    t_starts = [float(i) for i in range(31)] #this is for the different scenarios. Each scenario is 1 hour later. so the wind changes
 
     for t_start in t_starts:
         results = []
 
         for run_id in range(1, N_RUNS + 1):
+            seed = BASE_SEED + run_id #these are seeds. this line ensures that every run in different scenarios have the same seed. So run 1 in scenario 1 has the same seed as run 1 in scenario 2
+            t0 = time.perf_counter()
             _, cost_eur, _, _, _ = run_abc_once(
                 graph=graph,
                 node_coords=node_coords,
@@ -186,11 +183,16 @@ def main():
                 NP=POPULATION_SIZE,
                 NumIter=MAX_ITERATIONS,
                 Limit=LIMIT,
+                seed=seed
             )
+            runtime_sec = time.perf_counter() - t0 # seconds to run the abc once
 
             results.append({
                 "run": run_id,
+                "seed": seed,
+                "t_start": t_start,
                 "total_cost_eur": float(cost_eur),
+                "runtime_sec": runtime_sec,
             })
 
         df = pd.DataFrame(results)

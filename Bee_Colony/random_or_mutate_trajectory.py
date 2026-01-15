@@ -2,6 +2,7 @@
 
 import random
 from main_tryout import build_graph
+import numpy as np
 
 nodes, node_coords, graph, N_RINGS, N_ANGLES = build_graph()
 
@@ -19,7 +20,8 @@ goal_node = 610
 
 def RandomTrajectory(start_node, goal_node, graph, n_rings=29, rng=None):
 
-    rng = rng or random #use rng if rng != 0
+    if rng is None:
+        rng = np.random.default_rng() #this is for testing the algorithm without a seed
 
     trajectory = [start_node] #start of the trajectory
 
@@ -39,7 +41,7 @@ def RandomTrajectory(start_node, goal_node, graph, n_rings=29, rng=None):
 
         neighbors = [neighbor_id for (neighbor_id, _) in edges] #our adjecency lists still has costs. i put a dummy in it that all edge costs are 0 because we don't work with edge costs, only trajectory costs. the _ throws away the costs in this line
 
-        next = rng.choice(neighbors) #choose a random neighbor
+        next = int(rng.choice(neighbors)) #choose a random neighbor. the int() is for later, otherwise the nodes come out as this: np.int64(17)
 
         trajectory.append(next) #add it to the list of nodes
 
@@ -56,7 +58,8 @@ def RandomTrajectory(start_node, goal_node, graph, n_rings=29, rng=None):
 
 def MutateSolution(solution, graph, n_rings=29, rng=None, max_tries=200):
 
-    rng = rng or random #same as for define random trajectory
+    if rng is None:
+        rng = np.random.default_rng()  # this is for testing the algorithm without a seed
 
     expected_len = n_rings + 2 #the expected length of the trajectory. will be used  for safety check
     if len(solution) != expected_len:
@@ -66,7 +69,7 @@ def MutateSolution(solution, graph, n_rings=29, rng=None, max_tries=200):
     goal_node = solution[-1]
 
     for point in range(max_tries): #max tries is the max amount of tries to find a feasible mutation
-        ring_mutation = rng.randrange(0, n_rings) #choose a random ring number
+        ring_mutation = int(rng.integers(0, n_rings)) #choose a random ring number (integer)
         position = ring_mutation + 1  #the node of ring r is on index r + 1
 
         prev_node = solution[position - 1]
@@ -80,7 +83,7 @@ def MutateSolution(solution, graph, n_rings=29, rng=None, max_tries=200):
         if not feasible_options:
             continue #if it gives an [], the old node was the only option from the previous node
 
-        new_node = rng.choice(feasible_options) #choose a random feasible option
+        new_node = int(rng.choice(feasible_options)) #choose a random feasible option. int() for the same reason as previous
 
 
         new_solution = solution[:position] + [new_node] #get the list of the nodes of the trajectory before the point of mutation and add the new node
@@ -95,7 +98,7 @@ def MutateSolution(solution, graph, n_rings=29, rng=None, max_tries=200):
                 break #stops the loop if there are not any outgoing edges anymore
 
             neighbors = [nid for (nid, _) in edges]
-            next = rng.choice(neighbors)
+            next = int(rng.choice(neighbors))
 
             new_solution.append(next)
             current = next
@@ -122,8 +125,10 @@ chances to be selected by the random function.
 """
 
 
-def select_index_by_probability(prob_list):
-    r = random.random()  # random number between 0 and 1
+def select_index_by_probability(prob_list, rng = None):
+    if rng is None:
+        rng = np.random.default_rng()
+    r = rng.random()  # random number between 0 and 1
     cumulative = 0.0  # cumulative sum
     for index in range(len(prob_list)):
         cumulative += prob_list[index]

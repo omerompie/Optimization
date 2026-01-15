@@ -16,7 +16,10 @@ def _calculate_width_at_ring(
         base_width_m: float
 ) -> float:
     """
-    Internal helper: Calculates the grid width at a specific ring index using a sine wave.
+    Internal helper: Calculates grid width using an Inverted Parabola.
+
+    Old Logic: Sine Wave (Starts/Ends near 0 width) -> BAD for airport exploration.
+    New Logic: Parabola (Starts/Ends at ~30% width) -> GOOD for exploring departures.
     """
     if total_rings <= 1:
         return base_width_m
@@ -24,11 +27,21 @@ def _calculate_width_at_ring(
     # Progress: 0.0 (start) -> 1.0 (end)
     progress = ring_idx / (total_rings - 1)
 
-    # Sine factor: 0 -> 1 -> 0 (Bulges in the middle)
-    sine_factor = math.sin(math.pi * progress)
+    # 1. Calculate distance from center (0.0 at middle, 0.5 at ends)
+    distance_from_center = abs(progress - 0.5)
 
-    # Final Width = Base + (Bulge * Sine)
-    return (max_width_km * 1000.0 * sine_factor) + base_width_m
+    # 2. Inverted Parabola: 1.0 at center, 0.0 at ends
+    # Formula: y = 1 - (2x)^2
+    parabola_factor = 1.0 - (2.0 * distance_from_center) ** 2
+
+    # 3. Blend with Minimum Spread (e.g. 30%)
+    # This ensures we don't start at 0 width.
+    min_spread_factor = 0.3
+    spread_factor = min_spread_factor + (1.0 - min_spread_factor) * parabola_factor
+
+    # 4. Calculate Final Width
+    # We ignore base_width_m effectively, allowing the spread factor to dictate size based on max_width
+    return max_width_km * 1000.0 * spread_factor
 
 
 def generate_grid(
