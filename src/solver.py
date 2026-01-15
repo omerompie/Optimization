@@ -11,11 +11,11 @@ def solve_dynamic_dijkstra(
         start_time_sec,
         physics_engine_fn,
         time_bin_sec=100.0,
-        target_time_sec=None,  # Optional: Scheduled Time of Arrival
-        penalty_per_hour=0.0  # Optional: Cost per hour deviation
+        target_time_range_sec=None  # NEW: Tuple (min_sec, max_sec) or None
 ):
     """
-    Solves trajectory with optional Time of Arrival (ToA) Penalty.
+    Solves trajectory using Implicit Dynamic Dijkstra.
+    Applies HARD CONSTRAINTS on Time of Arrival (Range) instead of penalties.
     """
 
     # 1. INITIALIZATION
@@ -40,24 +40,27 @@ def solve_dynamic_dijkstra(
 
             # --- STEP A: GOAL CHECK ---
             if u == end_node_id:
-                actual_hours = current_time / 3600.0
+                # 1. CHECK LOWER BOUND (Too Early?)
+                # We can only check "Too Early" at the end, because slowing down is possible
+                # but speeding up is limited.
+                if target_time_range_sec:
+                    min_t, max_t = target_time_range_sec
+                    if current_time < min_t:
+                        # Arrived too early. Discard this path.
+                        # (Since queue is sorted by Cost, a later/slower path might pop next)
+                        continue
 
+                actual_hours = current_time / 3600.0
                 print("-" * 40)
                 print(f"PATH FOUND! (Checked {nodes_visited} states)")
                 print("-" * 40)
                 print(f"Actual Flight Time: {actual_hours:.4f} hours")
 
-                # Detailed Report if Penalty was active
-                if target_time_sec:
-                    target_hours = target_time_sec / 3600.0
-                    diff_hours = actual_hours - target_hours
-                    penalty_amount = abs(diff_hours) * penalty_per_hour
-
-                    print(f"Target Flight Time: {target_hours:.4f} hours")
-                    print(f"Deviation:          {diff_hours:+.4f} hours")
-                    print(f"Penalty Applied:    €{penalty_amount:.2f}")
-                else:
-                    print("Constraint:         None (Fastest/Cheapest found)")
+                if target_time_range_sec:
+                    min_h = target_time_range_sec[0] / 3600.0
+                    max_h = target_time_range_sec[1] / 3600.0
+                    print(f"Target Range:       {min_h:.2f}h - {max_h:.2f}h")
+                    print("Constraint:         PASSED (Within Range)")
 
                 print("-" * 40)
                 print(f"FINAL TOTAL COST:   €{current_cost:.2f}")
@@ -110,23 +113,25 @@ def solve_dynamic_dijkstra(
                 new_weight = current_weight - fuel_burn
                 new_time = current_time + (segment_time_h * 3600.0)
 
-                if new_weight < 0:   # Fix this. (Not good assumption).
-                    continue
+                # 2. CHECK VALIDITY (Fuel)
+                if new_weight < 0:
+                    continue  # Crashed (Out of Fuel)
 
-                # 2. APPLY TOA PENALTY (Only if entering the Goal Node)
-                if v == end_node_id and target_time_sec is not None:
-                    diff_hours = abs(new_time - target_time_sec) / 3600.0
-                    penalty = diff_hours * penalty_per_hour
-                    new_cost += penalty
+                # 3. CHECK VALIDITY (Time Upper Bound)
+                # "Prune if time is already outside the range" (Late)
+                if target_time_range_sec:
+                    min_t, max_t = target_time_range_sec
+                    if new_time > max_t:
+                        continue  # Already too late, stop exploring this branch
 
-                # 3. PUSH TO QUEUE
+                # 4. PUSH TO QUEUE
                 new_state_id = (v, new_time, new_weight)
                 current_state_id = (u, current_time, current_weight)
                 came_from[new_state_id] = current_state_id
 
                 heapq.heappush(priority_queue, (new_cost, v, new_time, new_weight))
 
-    print(f"No path found. Visited {nodes_visited} states.")
+    print(f"No path found within constraints. Visited {nodes_visited} states.")
     return [], 0.0
 
 

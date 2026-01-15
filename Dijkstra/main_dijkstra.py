@@ -1,5 +1,6 @@
 import sys
 import os
+import time
 
 # --- 1. SETUP PATHS ---
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -8,6 +9,8 @@ sys.path.append(parent_dir)
 
 from src.grid import generate_grid, build_adjacency_list
 from src.solver import solve_dynamic_dijkstra
+
+# Import Team Physics
 from Trajectory.Total_costs_edge import get_edge_cost
 
 # ==========================================
@@ -31,14 +34,12 @@ START_TIME_SEC = 0.0
 TIME_BIN_SEC = 100.0
 
 # --- D. TIME OF ARRIVAL (ToA) CONSTRAINTS ---
-# Set this to FALSE if you want pure cheapest/fastest route without penalty
-ENABLE_TOA_PENALTY = False
+# Set this to TRUE to enforce a strict arrival window
+ENABLE_TOA_CONSTRAINT = True
 
-SCHEDULED_TIME_HOURS = 8.0  # Target: Arrive in exactly 8.00 hours
-PENALTY_COST_PER_HOUR = 50000.0
-
-# Calculate Seconds (Internal use)
-SCHEDULED_TIME_SEC = SCHEDULED_TIME_HOURS * 3600.0
+# Define the exact allowed window (in Hours)
+MIN_ARRIVAL_HOURS = 7.0  # Earliest allowed arrival
+MAX_ARRIVAL_HOURS = 7.50  # Latest allowed arrival
 
 
 # ==========================================
@@ -61,16 +62,17 @@ def physics_adapter(u_id, waypoint_i, waypoint_j, current_weight_kg, current_tim
 def main():
     print(f"--- INITIALIZING DIJKSTRA OPTIMIZATION ---")
 
-    # 0. SETUP PENALTY LOGIC
-    if ENABLE_TOA_PENALTY:
-        print(f"ToA CONSTRAINT ACTIVE: Target {SCHEDULED_TIME_HOURS:.2f}h")
-        print(f"    Penalty: €{PENALTY_COST_PER_HOUR:.0f} per hour deviation")
-        final_target_time = SCHEDULED_TIME_SEC
-        final_penalty_rate = PENALTY_COST_PER_HOUR
+    # 0. SETUP CONSTRAINT LOGIC
+    if ENABLE_TOA_CONSTRAINT:
+        min_time_sec = MIN_ARRIVAL_HOURS * 3600.0
+        max_time_sec = MAX_ARRIVAL_HOURS * 3600.0
+        final_time_range = (min_time_sec, max_time_sec)
+
+        print(f"ToA CONSTRAINT ACTIVE: Hard Range")
+        print(f"    Window: {MIN_ARRIVAL_HOURS:.4f}h to {MAX_ARRIVAL_HOURS:.4f}h")
     else:
         print(f"ToA CONSTRAINT OFF: Optimizing for lowest base cost only.")
-        final_target_time = None
-        final_penalty_rate = 0.0
+        final_time_range = None
 
     # 1. GENERATE GRID
     print("\nGenerating Grid...")
@@ -101,6 +103,8 @@ def main():
     # 3. RUN DYNAMIC SOLVER
     print("\n--- Starting Dynamic Optimization ---")
 
+    t_start = time.time()
+
     path, cost = solve_dynamic_dijkstra(
         adjacency_list=graph,
         node_coords=node_coords,
@@ -110,11 +114,12 @@ def main():
         start_time_sec=START_TIME_SEC,
         physics_engine_fn=physics_adapter,
         time_bin_sec=TIME_BIN_SEC,
-
-        # --- PASSING THE CONFIGURABLE VARIABLES ---
-        target_time_sec=final_target_time,
-        penalty_per_hour=final_penalty_rate
+        target_time_range_sec=final_time_range
     )
+
+    t_end = time.time()
+    runtime = t_end - t_start
+    print(f"Computation Time: {runtime:.4f} seconds")
 
     # 4. SAVE RESULTS
     if path:
