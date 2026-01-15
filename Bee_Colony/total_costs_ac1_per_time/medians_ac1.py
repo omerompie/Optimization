@@ -171,6 +171,145 @@ avg_runtimes_ac1 = {
 
 print(avg_runtimes_ac1)
 
+best_cost_ac1_1 = float(df['total_cost_eur'].min())
+best_cost_ac1_2 = float(df2['total_cost_eur'].min())
+best_cost_ac1_3 = float(df3['total_cost_eur'].min())
+best_cost_ac1_4 = float(df4['total_cost_eur'].min())
+best_cost_ac1_5 = float(df5['total_cost_eur'].min())
+best_cost_ac1_6 = float(df6['total_cost_eur'].min())
+best_cost_ac1_7 = float(df7['total_cost_eur'].min())
+best_cost_ac1_8 = float(df8['total_cost_eur'].min())
+best_cost_ac1_9 = float(df9['total_cost_eur'].min())
+best_cost_ac1_10 = float(df10['total_cost_eur'].min())
+best_cost_ac1_11 = float(df11['total_cost_eur'].min())
+best_cost_ac1_12 = float(df12['total_cost_eur'].min())
+best_cost_ac1_13 = float(df13['total_cost_eur'].min())
+best_cost_ac1_14 = float(df14['total_cost_eur'].min())
+best_cost_ac1_15 = float(df15['total_cost_eur'].min())
+best_cost_ac1_16 = float(df16['total_cost_eur'].min())
+best_cost_ac1_17 = float(df17['total_cost_eur'].min())
+best_cost_ac1_18 = float(df18['total_cost_eur'].min())
+best_cost_ac1_19 = float(df19['total_cost_eur'].min())
+best_cost_ac1_20 = float(df20['total_cost_eur'].min())
+best_cost_ac1_21 = float(df21['total_cost_eur'].min())
+best_cost_ac1_22 = float(df22['total_cost_eur'].min())
+best_cost_ac1_23 = float(df23['total_cost_eur'].min())
+best_cost_ac1_24 = float(df24['total_cost_eur'].min())
+best_cost_ac1_25 = float(df25['total_cost_eur'].min())
+best_cost_ac1_26 = float(df26['total_cost_eur'].min())
+best_cost_ac1_27 = float(df27['total_cost_eur'].min())
+best_cost_ac1_28 = float(df28['total_cost_eur'].min())
+best_cost_ac1_29 = float(df29['total_cost_eur'].min())
+best_cost_ac1_30 = float(df30['total_cost_eur'].min())
+best_cost_ac1_31 = float(df31['total_cost_eur'].min())
 
+best_costs_ac1 = {
+    "t_start_0.0": best_cost_ac1_1,
+    "t_start_1.0": best_cost_ac1_2,
+    "t_start_2.0": best_cost_ac1_3,
+    "t_start_3.0": best_cost_ac1_4,
+    "t_start_4.0": best_cost_ac1_5,
+    "t_start_5.0": best_cost_ac1_6,
+    "t_start_6.0": best_cost_ac1_7,
+    "t_start_7.0": best_cost_ac1_8,
+    "t_start_8.0": best_cost_ac1_9,
+    "t_start_9.0": best_cost_ac1_10,
+    "t_start_10.0": best_cost_ac1_11,
+    "t_start_11.0": best_cost_ac1_12,
+    "t_start_12.0": best_cost_ac1_13,
+    "t_start_13.0": best_cost_ac1_14,
+    "t_start_14.0": best_cost_ac1_15,
+    "t_start_15.0": best_cost_ac1_16,
+    "t_start_16.0": best_cost_ac1_17,
+    "t_start_17.0": best_cost_ac1_18,
+    "t_start_18.0": best_cost_ac1_19,
+    "t_start_19.0": best_cost_ac1_20,
+    "t_start_20.0": best_cost_ac1_21,
+    "t_start_21.0": best_cost_ac1_22,
+    "t_start_22.0": best_cost_ac1_23,
+    "t_start_23.0": best_cost_ac1_24,
+    "t_start_24.0": best_cost_ac1_25,
+    "t_start_25.0": best_cost_ac1_26,
+    "t_start_26.0": best_cost_ac1_27,
+    "t_start_27.0": best_cost_ac1_28,
+    "t_start_28.0": best_cost_ac1_29,
+    "t_start_29.0": best_cost_ac1_30,
+    "t_start_30.0": best_cost_ac1_31,
+}
+print(best_costs_ac1)
 
+worst_cost_ac1_1 = float(df['total_cost_eur'].max())
+worst_cost_ac1_2 = float(df2['total_cost_eur'].max())
+worst_cost_ac1_3 = float(df3['total_cost_eur'].max())
+worst_cost_ac1_4 = float(df4['total_cost_eur'].max())
+worst_cost_ac1_5 = float(df5['total_cost_eur'].max())
+worst_cost_ac1_6 = float(df6['total_cost_eur'].max())
+worst_cost_ac1_7 = float(df7['total_cost_eur'].max())
+worst_cost_ac1_8 = float(df8['total_cost_eur'].max())
+worst_cost_ac1_9 = float(df9['total_cost_eur'].max())
+worst_cost_ac1_10 = float(df10['total_cost_eur'].max())
+worst_cost_ac1_11 = float(df11['total_cost_eur'].max())
+worst_cost_ac1_12 = float(df12['total_cost_eur'].max())
+worst_cost_ac1_13 = float(df13['total_cost_eur'].max())
+worst_cost_ac1_14 = float(df14['total_cost_eur'].max())
+worst_cost_ac1_15 = float(df15['total_cost_eur'].max())
+worst_cost_ac1_16 = float(df16['total_cost_eur'].max())
+worst_cost_ac1_17 = float(df17['total_cost_eur'].max())
+worst_cost_ac1_18 = float(df18['total_cost_eur'].max())
+worst_cost_ac1_19 = float(df19['total_cost_eur'].max())
+worst_cost_ac1_20 = float(df20['total_cost_eur'].max())
+worst_cost_ac1_21 = float(df21['total_cost_eur'].max())
+worst_cost_ac1_22 = float(df22['total_cost_eur'].max())
+worst_cost_ac1_23 = float(df23['total_cost_eur'].max())
+worst_cost_ac1_24 = float(df24['total_cost_eur'].max())
+worst_cost_ac1_25 = float(df25['total_cost_eur'].max())
+worst_cost_ac1_26 = float(df26['total_cost_eur'].max())
+worst_cost_ac1_27 = float(df27['total_cost_eur'].max())
+worst_cost_ac1_28 = float(df28['total_cost_eur'].max())
+worst_cost_ac1_29 = float(df29['total_cost_eur'].max())
+worst_cost_ac1_30 = float(df30['total_cost_eur'].max())
+worst_cost_ac1_31 = float(df31['total_cost_eur'].max())
 
+worst_costs_ac1 = {
+    "t_start_0.0": worst_cost_ac1_1,
+    "t_start_1.0": worst_cost_ac1_2,
+    "t_start_2.0": worst_cost_ac1_3,
+    "t_start_3.0": worst_cost_ac1_4,
+    "t_start_4.0": worst_cost_ac1_5,
+    "t_start_5.0": worst_cost_ac1_6,
+    "t_start_6.0": worst_cost_ac1_7,
+    "t_start_7.0": worst_cost_ac1_8,
+    "t_start_8.0": worst_cost_ac1_9,
+    "t_start_9.0": worst_cost_ac1_10,
+    "t_start_10.0": worst_cost_ac1_11,
+    "t_start_11.0": worst_cost_ac1_12,
+    "t_start_12.0": worst_cost_ac1_13,
+    "t_start_13.0": worst_cost_ac1_14,
+    "t_start_14.0": worst_cost_ac1_15,
+    "t_start_15.0": worst_cost_ac1_16,
+    "t_start_16.0": worst_cost_ac1_17,
+    "t_start_17.0": worst_cost_ac1_18,
+    "t_start_18.0": worst_cost_ac1_19,
+    "t_start_19.0": worst_cost_ac1_20,
+    "t_start_20.0": worst_cost_ac1_21,
+    "t_start_21.0": worst_cost_ac1_22,
+    "t_start_22.0": worst_cost_ac1_23,
+    "t_start_23.0": worst_cost_ac1_24,
+    "t_start_24.0": worst_cost_ac1_25,
+    "t_start_25.0": worst_cost_ac1_26,
+    "t_start_26.0": worst_cost_ac1_27,
+    "t_start_27.0": worst_cost_ac1_28,
+    "t_start_28.0": worst_cost_ac1_29,
+    "t_start_29.0": worst_cost_ac1_30,
+    "t_start_30.0": worst_cost_ac1_31,
+}
+print(worst_costs_ac1)
+
+sample_ac1 = pd.DataFrame({
+    "median_cost_eur": medians_ac1,
+    "mean_runtime_sec": avg_runtimes_ac1,
+    "best_cost_eur": best_costs_ac1,
+    "worst_cost_eur": worst_costs_ac1,
+})
+sample_ac1.to_csv("sample_ac1.csv", index=True, index_label="t_start") #without the last statement, the column t start was named 'anonymus'
+print(sample_ac1.head())
