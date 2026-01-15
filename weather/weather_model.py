@@ -1,17 +1,14 @@
-T_MAX = 9.0
+T_MAX = 39.0
 
 import pandas as pd
+import os
 import math
 
-
-import os
-import pandas as pd
-
-# FIX: Get directory of THIS file (weather/weather_model.py)
+# --- PATH FIX: Always find the CSV in the SAME folder as this script ---
 current_dir = os.path.dirname(os.path.abspath(__file__))
-# Target the CSV in the SAME folder
 csv_path = os.path.join(current_dir, 'wind_for_coordinates.csv')
 
+# Read the CSV using the absolute path
 df = pd.read_csv(csv_path)
 
 """

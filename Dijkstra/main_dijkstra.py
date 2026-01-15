@@ -35,7 +35,7 @@ TIME_BIN_SEC = 100.0
 
 # --- D. TIME OF ARRIVAL (ToA) CONSTRAINTS ---
 # Set this to TRUE to enforce a strict arrival window
-ENABLE_TOA_CONSTRAINT = True
+ENABLE_TOA_CONSTRAINT = False
 
 # Define the exact allowed window (in Hours)
 MIN_ARRIVAL_HOURS = 7.0  # Earliest allowed arrival

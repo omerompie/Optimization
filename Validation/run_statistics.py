@@ -94,7 +94,7 @@ def main():
             sim_weight = INITIAL_WEIGHT_KG
             sim_time = start_time_sec
             for i in range(len(path) - 1):
-                f, t, c = physics_adapter(path[i], node_coords[path[i]], node_coords[path[i + 1]], sim_weight, sim_time)
+                f, t, c = physics_adapter(path[i], node_coords[path[i]], node_coords[path[i + 1]], sim_weight, sim_time / 3600.0)
                 sim_weight -= f
                 sim_time += t * 3600.0
 

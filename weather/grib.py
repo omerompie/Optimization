@@ -68,16 +68,47 @@ with all our values for a given time.
 location = Path(__file__).resolve().parent #help call the grib2 files with Path library
 
 files = [ #make a list for all our GRIB2 files
-    "gfs.t06z.pgrb2.0p25.f000", #weather at t = 0
-    "gfs.t06z.pgrb2.0p25.f001",
-    "gfs.t06z.pgrb2.0p25.f002",
-    "gfs.t06z.pgrb2.0p25.f003",
-    "gfs.t06z.pgrb2.0p25.f004",
-    "gfs.t06z.pgrb2.0p25.f005",
-    "gfs.t06z.pgrb2.0p25.f006",
-    "gfs.t06z.pgrb2.0p25.f007",
-    "gfs.t06z.pgrb2.0p25.f008",
-    "gfs.t06z.pgrb2.0p25.f009", #weather at t = 9 hours after start
+    "gfs.t18z.pgrb2.0p25.f000", #weather at t = 0
+    "gfs.t18z.pgrb2.0p25.f001",
+    "gfs.t18z.pgrb2.0p25.f002",
+    "gfs.t18z.pgrb2.0p25.f003",
+    "gfs.t18z.pgrb2.0p25.f004",
+    "gfs.t18z.pgrb2.0p25.f005",
+    "gfs.t18z.pgrb2.0p25.f006",
+    "gfs.t18z.pgrb2.0p25.f007",
+    "gfs.t18z.pgrb2.0p25.f008",
+    "gfs.t18z.pgrb2.0p25.f009", #weather at t = 9 hours after start
+    "gfs.t18z.pgrb2.0p25.f009",
+    "gfs.t18z.pgrb2.0p25.f010",
+    "gfs.t18z.pgrb2.0p25.f011",
+    "gfs.t18z.pgrb2.0p25.f012",
+    "gfs.t18z.pgrb2.0p25.f013",
+    "gfs.t18z.pgrb2.0p25.f014",
+    "gfs.t18z.pgrb2.0p25.f015",
+    "gfs.t18z.pgrb2.0p25.f016",
+    "gfs.t18z.pgrb2.0p25.f017",
+    "gfs.t18z.pgrb2.0p25.f018",
+    "gfs.t18z.pgrb2.0p25.f019",
+    "gfs.t18z.pgrb2.0p25.f020",
+    "gfs.t18z.pgrb2.0p25.f021",
+    "gfs.t18z.pgrb2.0p25.f022",
+    "gfs.t18z.pgrb2.0p25.f023",
+    "gfs.t18z.pgrb2.0p25.f024",
+    "gfs.t18z.pgrb2.0p25.f025",
+    "gfs.t18z.pgrb2.0p25.f026",
+    "gfs.t18z.pgrb2.0p25.f027",
+    "gfs.t18z.pgrb2.0p25.f028",
+    "gfs.t18z.pgrb2.0p25.f029",
+    "gfs.t18z.pgrb2.0p25.f030",
+    "gfs.t18z.pgrb2.0p25.f031",
+    "gfs.t18z.pgrb2.0p25.f032",
+    "gfs.t18z.pgrb2.0p25.f033",
+    "gfs.t18z.pgrb2.0p25.f034",
+    "gfs.t18z.pgrb2.0p25.f035",
+    "gfs.t18z.pgrb2.0p25.f036",
+    "gfs.t18z.pgrb2.0p25.f037",
+    "gfs.t18z.pgrb2.0p25.f038",
+    "gfs.t18z.pgrb2.0p25.f039",
 ]
 
 dataframes = {} #make a dictionary with the files as key and dataframe as values
