@@ -11,11 +11,11 @@ def solve_dynamic_dijkstra(
         start_time_sec,
         physics_engine_fn,
         time_bin_sec=100.0,
-        target_time_range_sec=None  # NEW: Tuple (min_sec, max_sec) or None
+        target_time_range_sec=None
 ):
     """
     Solves trajectory using Implicit Dynamic Dijkstra.
-    Applies HARD CONSTRAINTS on Time of Arrival (Range) instead of penalties.
+    Returns: (path, total_cost, nodes_visited_count)
     """
 
     # 1. INITIALIZATION
@@ -29,7 +29,7 @@ def solve_dynamic_dijkstra(
 
     nodes_visited = 0
 
-    print("Starting Implicit Dijkstra Search...")
+    print(f"Starting Implicit Dijkstra Search (Start t={start_time_sec / 3600:.1f}h)...")
 
     with open("search_history.txt", "w") as history_file:
 
@@ -41,15 +41,13 @@ def solve_dynamic_dijkstra(
             # --- STEP A: GOAL CHECK ---
             if u == end_node_id:
                 # 1. CHECK LOWER BOUND (Too Early?)
-                # We can only check "Too Early" at the end, because slowing down is possible
-                # but speeding up is limited.
                 if target_time_range_sec:
                     min_t, max_t = target_time_range_sec
                     if current_time < min_t:
                         # Arrived too early. Discard this path.
-                        # (Since queue is sorted by Cost, a later/slower path might pop next)
                         continue
 
+                        # --- RESTORED PRINTING BLOCK ---
                 actual_hours = current_time / 3600.0
                 print("-" * 40)
                 print(f"PATH FOUND! (Checked {nodes_visited} states)")
@@ -59,7 +57,7 @@ def solve_dynamic_dijkstra(
                 if target_time_range_sec:
                     min_h = target_time_range_sec[0] / 3600.0
                     max_h = target_time_range_sec[1] / 3600.0
-                    print(f"Target Range:       {min_h:.2f}h - {max_h:.2f}h")
+                    print(f"Target Range:       {min_h:.4f}h - {max_h:.4f}h")
                     print("Constraint:         PASSED (Within Range)")
 
                 print("-" * 40)
@@ -67,7 +65,8 @@ def solve_dynamic_dijkstra(
                 print(f"Fuel Remaining:     {current_weight:.0f} kg")
                 print("-" * 40)
 
-                return reconstruct_path(came_from, (u, current_time, current_weight)), current_cost
+                # Return Path, Cost, AND nodes_visited
+                return reconstruct_path(came_from, (u, current_time, current_weight)), current_cost, nodes_visited
 
             # --- STEP B: PRUNING (Pareto) ---
             t_bin = int(current_time / time_bin_sec)
@@ -115,24 +114,23 @@ def solve_dynamic_dijkstra(
 
                 # 2. CHECK VALIDITY (Fuel)
                 if new_weight < 0:
-                    continue  # Crashed (Out of Fuel)
+                    continue
 
-                # 3. CHECK VALIDITY (Time Upper Bound)
-                # "Prune if time is already outside the range" (Late)
+                    # 3. CHECK VALIDITY (Time Upper Bound)
                 if target_time_range_sec:
                     min_t, max_t = target_time_range_sec
                     if new_time > max_t:
-                        continue  # Already too late, stop exploring this branch
+                        continue
 
-                # 4. PUSH TO QUEUE
+                        # 4. PUSH TO QUEUE
                 new_state_id = (v, new_time, new_weight)
                 current_state_id = (u, current_time, current_weight)
                 came_from[new_state_id] = current_state_id
 
                 heapq.heappush(priority_queue, (new_cost, v, new_time, new_weight))
 
-    print(f"No path found within constraints. Visited {nodes_visited} states.")
-    return [], 0.0
+    print(f"No path found. Visited {nodes_visited} states.")
+    return [], 0.0, nodes_visited
 
 
 def reconstruct_path(came_from, final_state):

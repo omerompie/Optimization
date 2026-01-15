@@ -105,7 +105,7 @@ def main():
 
     t_start = time.time()
 
-    path, cost = solve_dynamic_dijkstra(
+    path, cost, _ = solve_dynamic_dijkstra(
         adjacency_list=graph,
         node_coords=node_coords,
         start_node_id=0,
