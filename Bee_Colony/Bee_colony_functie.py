@@ -173,7 +173,7 @@ def main():
         for run_id in range(1, N_RUNS + 1):
             seed = BASE_SEED + run_id #these are seeds. this line ensures that every run in different scenarios have the same seed. So run 1 in scenario 1 has the same seed as run 1 in scenario 2
             t0 = time.perf_counter()
-            _, cost_eur, _, _, _ = run_abc_once(
+            _, cost_eur, best_fuel_kg, _, _ = run_abc_once(
                 graph=graph,
                 node_coords=node_coords,
                 N_RINGS=N_RINGS,
@@ -192,6 +192,7 @@ def main():
                 "seed": seed,
                 "t_start": t_start,
                 "total_cost_eur": float(cost_eur),
+                "total_fuel_burn_kg": float(best_fuel_kg),
                 "runtime_sec": runtime_sec,
             })
 

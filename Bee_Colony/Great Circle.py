@@ -1,6 +1,7 @@
 import folium
 from main_tryout import build_graph
 
+
 best_solution_bee = [0, 18, 40, 60, 80, 101, 122, 142, 163, 184, 205, 226, 247, 268, 289, 311, 332, 353, 374, 395, 416, 437, 457, 478, 499, 520, 541, 562, 583, 603, 610]
 
 best_solution_dijkstra = [0,

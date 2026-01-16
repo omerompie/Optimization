@@ -304,12 +304,80 @@ worst_costs_ac1 = {
     "t_start_30.0": worst_cost_ac1_31,
 }
 print(worst_costs_ac1)
+median_fuel_ac_1_1  = float(df['total_fuel_burn_kg'].median())
+median_fuel_ac_1_2  = float(df2['total_fuel_burn_kg'].median())
+median_fuel_ac_1_3  = float(df3['total_fuel_burn_kg'].median())
+median_fuel_ac_1_4  = float(df4['total_fuel_burn_kg'].median())
+median_fuel_ac_1_5  = float(df5['total_fuel_burn_kg'].median())
+median_fuel_ac_1_6  = float(df6['total_fuel_burn_kg'].median())
+median_fuel_ac_1_7  = float(df7['total_fuel_burn_kg'].median())
+median_fuel_ac_1_8  = float(df8['total_fuel_burn_kg'].median())
+median_fuel_ac_1_9  = float(df9['total_fuel_burn_kg'].median())
+median_fuel_ac_1_10 = float(df10['total_fuel_burn_kg'].median())
+median_fuel_ac_1_11 = float(df11['total_fuel_burn_kg'].median())
+median_fuel_ac_1_12 = float(df12['total_fuel_burn_kg'].median())
+median_fuel_ac_1_13 = float(df13['total_fuel_burn_kg'].median())
+median_fuel_ac_1_14 = float(df14['total_fuel_burn_kg'].median())
+median_fuel_ac_1_15 = float(df15['total_fuel_burn_kg'].median())
+median_fuel_ac_1_16 = float(df16['total_fuel_burn_kg'].median())
+median_fuel_ac_1_17 = float(df17['total_fuel_burn_kg'].median())
+median_fuel_ac_1_18 = float(df18['total_fuel_burn_kg'].median())
+median_fuel_ac_1_19 = float(df19['total_fuel_burn_kg'].median())
+median_fuel_ac_1_20 = float(df20['total_fuel_burn_kg'].median())
+median_fuel_ac_1_21 = float(df21['total_fuel_burn_kg'].median())
+median_fuel_ac_1_22 = float(df22['total_fuel_burn_kg'].median())
+median_fuel_ac_1_23 = float(df23['total_fuel_burn_kg'].median())
+median_fuel_ac_1_24 = float(df24['total_fuel_burn_kg'].median())
+median_fuel_ac_1_25 = float(df25['total_fuel_burn_kg'].median())
+median_fuel_ac_1_26 = float(df26['total_fuel_burn_kg'].median())
+median_fuel_ac_1_27 = float(df27['total_fuel_burn_kg'].median())
+median_fuel_ac_1_28 = float(df28['total_fuel_burn_kg'].median())
+median_fuel_ac_1_29 = float(df29['total_fuel_burn_kg'].median())
+median_fuel_ac_1_30 = float(df30['total_fuel_burn_kg'].median())
+median_fuel_ac_1_31 = float(df31['total_fuel_burn_kg'].median())
+
+medians_fuel_ac1 = {
+    "t_start_0.0":  median_fuel_ac_1_1,
+    "t_start_1.0":  median_fuel_ac_1_2,
+    "t_start_2.0":  median_fuel_ac_1_3,
+    "t_start_3.0":  median_fuel_ac_1_4,
+    "t_start_4.0":  median_fuel_ac_1_5,
+    "t_start_5.0":  median_fuel_ac_1_6,
+    "t_start_6.0":  median_fuel_ac_1_7,
+    "t_start_7.0":  median_fuel_ac_1_8,
+    "t_start_8.0":  median_fuel_ac_1_9,
+    "t_start_9.0":  median_fuel_ac_1_10,
+    "t_start_10.0": median_fuel_ac_1_11,
+    "t_start_11.0": median_fuel_ac_1_12,
+    "t_start_12.0": median_fuel_ac_1_13,
+    "t_start_13.0": median_fuel_ac_1_14,
+    "t_start_14.0": median_fuel_ac_1_15,
+    "t_start_15.0": median_fuel_ac_1_16,
+    "t_start_16.0": median_fuel_ac_1_17,
+    "t_start_17.0": median_fuel_ac_1_18,
+    "t_start_18.0": median_fuel_ac_1_19,
+    "t_start_19.0": median_fuel_ac_1_20,
+    "t_start_20.0": median_fuel_ac_1_21,
+    "t_start_21.0": median_fuel_ac_1_22,
+    "t_start_22.0": median_fuel_ac_1_23,
+    "t_start_23.0": median_fuel_ac_1_24,
+    "t_start_24.0": median_fuel_ac_1_25,
+    "t_start_25.0": median_fuel_ac_1_26,
+    "t_start_26.0": median_fuel_ac_1_27,
+    "t_start_27.0": median_fuel_ac_1_28,
+    "t_start_28.0": median_fuel_ac_1_29,
+    "t_start_29.0": median_fuel_ac_1_30,
+    "t_start_30.0": median_fuel_ac_1_31,
+}
+
 
 sample_ac1 = pd.DataFrame({
     "median_cost_eur": medians_ac1,
     "mean_runtime_sec": avg_runtimes_ac1,
     "best_cost_eur": best_costs_ac1,
     "worst_cost_eur": worst_costs_ac1,
+    "median_fuel_burn_kg": medians_fuel_ac1,
 })
+print(medians_fuel_ac1)
 sample_ac1.to_csv("sample_ac1.csv", index=True, index_label="t_start") #without the last statement, the column t start was named 'anonymus'
 print(sample_ac1.head())
