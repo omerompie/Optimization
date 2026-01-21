@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
+This file is used in other files to determine the heading of the aircraft and the distance between waypoints.
 
 @author: Alejandro Murrieta (I just copied it from an old MATLAB file)
 All credit goes to RMIT in Australia
@@ -198,21 +199,4 @@ def v_inverse(lat1,lon1,az12,s):
         
     return lat2,lon2
     
-# TEST CODE BEGINS HERE
 
-
-#
-# boston = (42.3541165, -71.0693514)
-# newyork = (40.7791472, -73.9680804)
-#
-# distance,azimuth = v_direct(boston, newyork)  # Meteres, degrees
-# print(distance)  # 298396.05747326626 mts
-# print(azimuth)   # 235.0838926191198  degrees
-#
-# # Define a waypoint
-# # vinc_in(lat, lon, alpha12, s )
-#
-# lat2,lon2 = v_inverse(boston[0],boston[1],azimuth,distance)
-# print(lat2)     # 40.77914719998252
-# print(lon2)     # -73.96808039994268
-#

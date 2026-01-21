@@ -1,4 +1,4 @@
-from Trajectory.Total_costs_trajectory import get_trajectory_cost
+from Trajectory.trajectory_cost_ac1 import get_trajectory_cost
 from main_tryout import build_graph
 import pandas as pd
 

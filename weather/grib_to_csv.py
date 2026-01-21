@@ -1,5 +1,4 @@
 from pathlib import Path
-import numpy as np
 import pandas as pd
 import xarray as xr
 
@@ -7,20 +6,20 @@ pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
 
 
-from weather.coordinates import build_graph
-nodes, node_coords, graph, N_RINGS, N_ANGLES = build_graph()
+from graph_build_for_bee.build_graph_function import build_graph
+nodes, node_coords, graph, N_RINGS, N_ANGLES = build_graph() #to get our coordinates with their IDs, we call the build_graph function
 
 """
 first, we create a latitude and longitude list for all out waypoints that can be used by xarray
 """
-point_ids = sorted(node_coords.keys())
-points = [node_coords[nid] for nid in point_ids]
-lat_list = [lat for (lat, lon) in points]
-lon_list = [lon for (lat, lon) in points]
+point_ids = sorted(node_coords.keys()) #make sure all the node IDs from the graph are sorted from 0 to end node 610
+points = [node_coords[nid] for nid in point_ids] #for every nid (stands for node id) in the point_ids, get the coordinates
+lat_list = [lat for (lat, lon) in points] #the points are tuples (lat, lon). for the latitudes we want only lat
+lon_list = [lon for (lat, lon) in points] #the points are tuples (lat, lon). for the longitudes we want only lon
 
 
-lats = xr.DataArray(lat_list, dims="point")
-lons = xr.DataArray(lon_list, dims="point")
+lats = xr.DataArray(lat_list, dims="point") #create a 1 dimensional list of latitudes with 1 latitude per waypoint
+lons = xr.DataArray(lon_list, dims="point") #create a 1 dimensional list of longitudes with 1 longitude per waypoint
 
 """
 Next, we want to create a dataframe for every grib 2 file. 
@@ -30,7 +29,7 @@ we want weather direction and speed for every waypoint at given times.
 
 def get_wind_from_grib(grib_path):
 
-    ds = xr.open_dataset(grib_path, engine = 'cfgrib', backend_kwargs = {'indexpath': ''}) #open the grib file with cfgrib and ensure that the engine writes the indices inside the grib
+    ds = xr.open_dataset(grib_path, engine = 'cfgrib', backend_kwargs = {'indexpath': ''}) #open the grib file with cfgrib (engine which can read grib files). indexpath:'' ''  to prevent cfgrib from writing a persistent *.idx file to disk
 
     ds = ds.sortby('latitude')
     ds = ds.sortby('longitude') #for the bilinear interpolation the values should be ascending
@@ -38,11 +37,11 @@ def get_wind_from_grib(grib_path):
     u = ds['u'] #wind from west to east
     v = ds['v'] #wind from south to north
 
-    valid_time = pd.Timestamp(ds['valid_time'].values) #to create a timestamp. later used to assign a time to the coordinates and wind condtions
+    valid_time = pd.Timestamp(ds['valid_time'].values) #to create a timestamp with pandas. later used to assign a time to the coordinates and wind condtions
 
 
-    u_wp = u.interp(latitude=lats, longitude=lons, method='linear') #interpolate the west to east wind at every waypoint
-    v_wp = v.interp(latitude=lats, longitude=lons, method='linear') #interpolate the south to north wind at every waypoint
+    u_wp = u.interp(latitude=lats, longitude=lons, method='linear') #bilinearly interpolate the west to east wind at every waypoint
+    v_wp = v.interp(latitude=lats, longitude=lons, method='linear') #bilinearly interpolate the south to north wind at every waypoint
 
 
     """
@@ -56,7 +55,7 @@ def get_wind_from_grib(grib_path):
         'u_speed_ms': u_wp,
         'v_speed_ms': v_wp,
         'time': valid_time
-    })
+    }) #creating the dataframe with all the desired keys and values
     return df
 
 """
@@ -118,21 +117,21 @@ for name in files:
     df_name = get_wind_from_grib(path) #create all the dataframes
     dataframes[name] = df_name #put all the dataframes in the dictionary
 
-whole_dataframe = pd.concat(list(dataframes.values()), ignore_index=True) #make 1 big dataframe for all grib files
-whole_dataframe = whole_dataframe.sort_values(['time', 'waypoint_id']).reset_index(drop = True) #sort so that the time is ascending for each waypoint id
+whole_dataframe = pd.concat(list(dataframes.values()), ignore_index=True) #make 1 big dataframe for all grib files. concat stacks all the dataframes
+whole_dataframe = whole_dataframe.sort_values(['time', 'waypoint_id']).reset_index(drop = True) #sort so that the time is ascending for each waypoint id (the IDs are also ascending). Drop the old indexes and replace with the new ones so that the indices are ascending one by one
 
 """
 the last step is to make a column with the time in hours. 
-because the calculate edge costs function uses total flight time, 
+because the calculate edge costs function uses time in hours, 
 the UTC time cannot be used. 
-we have to create the start time first, which is the first timestamp in the dataframe.
+we have to create the start time first, which is the first timestamp in the dataframe (1-13-2026 18.00 UTC).
 """
 
 t0 = whole_dataframe['time'].min()
 
 whole_dataframe['time_hours'] = (whole_dataframe['time'] - t0) / pd.Timedelta(hours = 1) #make a new column which shows the total flight time that corresponds with the timestamp. and creates a float
 
-whole_dataframe.to_csv('wind_for_coordinates.csv', index = False)
+whole_dataframe.to_csv('wind_for_coordinates.csv', index = False) #export the csv with all weather data for the coordinates at several timestamps
 
 
 

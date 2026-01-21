@@ -8,7 +8,7 @@ sys.path.append(parent_dir)
 
 from src.grid import generate_grid, build_adjacency_list
 from src.solver import solve_dynamic_dijkstra
-from Trajectory.Total_costs_edge import get_edge_cost
+from Trajectory.edge_cost_aircraft1 import get_edge_cost
 
 # ==========================================
 #        GLOBAL CONFIGURATION

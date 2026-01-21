@@ -6,8 +6,7 @@ heb ik een nieuw bestand gemaakt, deze, waarin ik het heb opgesplitst om in bees
 """
 
 from src.grid import generate_grid, build_adjacency_list
-from src.vinc import v_direct
-from src.ansp import get_ansp_cost_for_edge
+
 
 def calculate_edge_cost(a, b):
     # Dummy: alleen zodat build_adjacency_list kan draaien.

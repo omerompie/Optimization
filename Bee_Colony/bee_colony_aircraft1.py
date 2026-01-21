@@ -18,7 +18,7 @@ T_START = 30.0
 from Bee_Colony.random_or_mutate_trajectory import RandomTrajectory
 from Bee_Colony.random_or_mutate_trajectory import MutateSolution
 from main_tryout import build_graph
-from Trajectory.Total_costs_trajectory import get_trajectory_cost
+from Trajectory.trajectory_cost_ac1 import get_trajectory_cost
 from Bee_Colony.random_or_mutate_trajectory import select_index_by_probability
 import numpy as np
 
