@@ -1,6 +1,16 @@
-POPULATION_SIZE = 50 #voor nu klein zodat we snel antwoord krijgen, kan opgeschaald worden
-MAX_ITERATIONS = 150 #zelfde als voor pupulation: klein voor nu
-LIMIT = 50 #zelfde als voor population: klein voor nu
+"""
+This file makes the code for the bee colony algorithm to run once.
+This is the base file in which we are going to test it before putting it into a function for different
+scenarios.
+
+As it is the same as for aircraft 1, but with another speed and performance database input,
+I will not comment the code again. refer to base bee colony ac 1
+"""
+
+
+POPULATION_SIZE = 50
+MAX_ITERATIONS = 150
+LIMIT = 50
 TEMPERATURE_HEIGHT = 288.15 - ((34000 * 0.3048) * 0.0065) #temperature at our fixed flight altitude of 34,0000 feet
 COST_OF_TIME_INDEX = 35 #associated operating costs, expressed in kg fuel burn per hour
 MACH_AIRCRAFT_1 = 0.82 #the speed at which aircraft 1 flies with maximum efficiency
@@ -11,13 +21,16 @@ FUEL_BURN_MAX = 62600 #maximum amount of fuel burn for the cruise based on aircr
 MIN_WEIGHT = 195143
 T_MAX = 7.0
 T_MIN = 8.0
+TIME_MAX_AC2 = 7.85 #this is the time window for the aircraft 2. this is the maximum flight time. it is later than for ac1 because ac 2 has a lower TAS
+TIME_MIN_AC2 = 7.35
 t_max = 39.0 #this is for interpolation of weather
+T_START = 0.0
 
-from Bee_Colony.random_or_mutate_trajectory import RandomTrajectory
-from Bee_Colony.random_or_mutate_trajectory import MutateSolution
-from main_tryout import build_graph
+from Bee_Colony.random_or_mutate_trajectory_and_roulette_wheel import RandomTrajectory
+from Bee_Colony.random_or_mutate_trajectory_and_roulette_wheel import MutateSolution
+from graph_build_for_bee.build_graph_function import build_graph
 from Trajectory.trajectory_cost_ac2 import get_trajectory_cost_ac2
-from Bee_Colony.random_or_mutate_trajectory import select_index_by_probability
+from Bee_Colony.random_or_mutate_trajectory_and_roulette_wheel import select_index_by_probability
 
 
 
@@ -40,30 +53,29 @@ goal_node = 610
 Initialization
 """
 
-Solutions = [None] * NP #make a list with the length of NP. All the values of solutions will come into this list
-Costs = [None] * NP #make a list with the length of NP. All the values of Costs will come into this list
-Trials = [0] * NP #make a list with the length of NP. All the values of Trials will come into this list
-Prob = [0.0] * NP #make a list with the length of NP. All the Prob of solutions will come into this list
+Solutions = [None] * NP
+Costs = [None] * NP
+Trials = [0] * NP
+Prob = [0.0] * NP
 
 for i in range(NP):
     Solutions[i] = RandomTrajectory(start_node, goal_node, graph, n_rings=N_RINGS)
-    cost_euro, fuel_burn, time_s, weight = get_trajectory_cost_ac2(Solutions[i], Node_coordinates) #when we have the wind model, insert it between the brackets)
+    cost_euro, fuel_burn, time_s, weight = get_trajectory_cost_ac2(Solutions[i], Node_coordinates, t_start=T_START)
     Costs[i] = cost_euro
-    Trials[i] = 0
 
-min_cost = min(Costs) #finds the minimum value of all costs
-b = Costs.index(min_cost) #Gives the index of the best solution and name it b
-BestSolution = Solutions[b].copy() #to avoid accidentally overwriting it later
+min_cost = min(Costs)
+b = Costs.index(min_cost)
+BestSolution = Solutions[b].copy()
 BestCost = Costs[b]
 
 iteration = 0
 
 
 
-best_history = []   #for the animation
+best_history = []
 cost_history = []
 
-while iteration < NumIter: #start of the headloop
+while iteration < NumIter:
 
     """
     Employed bee phase
@@ -74,7 +86,7 @@ while iteration < NumIter: #start of the headloop
         current_costs = Costs[i]
 
         candidate_solution = MutateSolution(current_solution, graph, n_rings=N_RINGS)
-        candidate_costs, _, _, _ = get_trajectory_cost_ac2(candidate_solution, Node_coordinates)
+        candidate_costs, _, _, _ = get_trajectory_cost_ac2(candidate_solution, Node_coordinates, t_start=T_START)
 
         if candidate_costs < current_costs:
             Solutions[i] = candidate_solution
@@ -94,35 +106,35 @@ while iteration < NumIter: #start of the headloop
     """
     Onlooker bee phase
     """
-    a = [0] * NP #make a list of all ranking scores a
+    a = [0] * NP
     for i in range(NP):
         for j in range(NP):
             if Costs[i] <= Costs[j]:
-                a[i] += 1 #compare all trajectories. if one trajectory is better, it gets a plus 1 score
+                a[i] += 1
 
-    SumA = sum(a) #sum of the a scores
+    SumA = sum(a)
     if SumA == 0:
-        Prob = [1.0 / NP] * NP #for debugging, in the very low chance that sumA is zero, make every prob the same
+        Prob = [1.0 / NP] * NP
     else:
-        Prob = [ai / SumA for ai in a] #divide every a ranking by the sum to get the probability and store them in a list
+        Prob = [ai / SumA for ai in a]
 
     for onlooker in range(NP):
-        k = select_index_by_probability(Prob) #the function returns the index based on the roulette wheel and is a random tajectory
+        k = select_index_by_probability(Prob)
 
-        base_solution = Solutions[k] #this is the trajectory with index k
-        base_cost = Costs[k] #associated costs
+        base_solution = Solutions[k]
+        base_cost = Costs[k]
 
-        candidate_solution = MutateSolution(base_solution, graph, n_rings=N_RINGS) #make a mutation
-        candidate_cost, _, _, _ = get_trajectory_cost_ac2(candidate_solution, Node_coordinates) #calculate the costs of this mutation
+        candidate_solution = MutateSolution(base_solution, graph, n_rings=N_RINGS)
+        candidate_cost, _, _, _ = get_trajectory_cost_ac2(candidate_solution, Node_coordinates, t_start=T_START)
 
         if candidate_cost < base_cost:
             Solutions[k] = candidate_solution
-            Costs[k] = candidate_cost #same as for employed. if the mutation is a success, replace the new trajectory with the old
-            Trials[k] = 0 #if the mutation is a success, do not add a trial, else, add a trial.
+            Costs[k] = candidate_cost
+            Trials[k] = 0
         else:
             Trials[k] += 1
 
-    min_cost = min(Costs) #update global costs, againn!!!
+    min_cost = min(Costs)
     b = Costs.index(min_cost)
 
     if min_cost < BestCost:
@@ -132,47 +144,43 @@ while iteration < NumIter: #start of the headloop
     """
     Scout bee phase
     """
-    best_index = Costs.index(min(Costs)) #store the index of the best solution in best_index
+    best_index = Costs.index(min(Costs))
     for i in range(NP):
         if i == best_index:
-            continue #this line prevents the best solution until now to be replaced by a random trajectory by the scout
-            #it is possible that the best trajectory until now can't be improved but it is still the global best
-            #so I don't want that to be thrown away
+            continue
 
         if Trials[i] > LIMIT:
             Solutions[i] = RandomTrajectory(start_node, goal_node, graph, n_rings=N_RINGS) #make a new random trajectory
-            new_costs, _, _, _ = get_trajectory_cost_ac2(Solutions[i], Node_coordinates)
+            new_costs, _, _, _ = get_trajectory_cost_ac2(Solutions[i], Node_coordinates, t_start=T_START)
             Costs[i] = new_costs
             Trials[i] = 0
 
-    min_cost = min(Costs) #again, find the new costs
+    min_cost = min(Costs)
     b = Costs.index(min_cost)
 
     if min_cost < BestCost:
         BestCost = min_cost
         BestSolution = Solutions[b].copy()
 
-    best_history.append(BestSolution.copy()) #for the animation
+    best_history.append(BestSolution.copy())
     cost_history.append(BestCost)
 
     iteration += 1 #add 1 iteration
 
-print(f'The best trajectory are the following waypoint: {BestSolution}')
+print(f'The best trajectory are the following waypoints: {BestSolution}')
 
 
-_, total_fuel, total_time, total_weight = get_trajectory_cost_ac2(BestSolution, Node_coordinates)
+_, total_fuel, total_time, _ = get_trajectory_cost_ac2(BestSolution, Node_coordinates, t_start=T_START)
 
-remaining_weight = total_weight - MIN_WEIGHT
+
 
 
 print(f'The total fuel burn on this trajectory is {total_fuel:.0f} kg')
 print(f'The total time for this trajectory is {total_time:.2f} hours')
 print(f'The total costs for this is trajectory are {BestCost:.0f} euros')
-print(f'The total weight of the aircraft is {total_weight:.0f} kilos. This is {remaining_weight:.0f} kilos above the minimum weight')
 
 """
-To be honest, the following has been made by chat gpt because i couldn't figure out how to make
-this kind of animation.
+for animation, refer to AI disclosure
 """
 
 

@@ -1,8 +1,14 @@
+"""
+This file makes a visualization of the two algorithm outcomes and includes the great circle trajectory.
+If you run this file, a file named compare_routes.html should pop up in this directory.
+"""
+
+
 import folium
-from main_tryout import build_graph
+from graph_build_for_bee.build_graph_function import build_graph
 
 
-best_solution_bee = [0, 18, 40, 60, 80, 101, 122, 142, 163, 184, 205, 226, 247, 268, 289, 311, 332, 353, 374, 395, 416, 437, 457, 478, 499, 520, 541, 562, 583, 603, 610]
+median_solution_bee_scenario_0 = [0, 18, 40, 60, 80, 101, 122, 142, 163, 184, 205, 226, 247, 268, 289, 311, 332, 353, 374, 395, 416, 437, 457, 478, 499, 520, 541, 562, 583, 603, 610]
 
 best_solution_dijkstra = [0,
 21,
@@ -39,6 +45,13 @@ best_solution_dijkstra = [0,
 
 great_circle_trajectory = [0, 11, 32, 53, 74, 95, 116, 137, 158, 179, 200, 221, 242, 263, 284, 305, 326, 347, 368, 389, 410, 431, 452, 473, 494, 515, 536, 557, 578, 610]
 
+"""
+please refer to the AI disclosure. 
+We made the inputs for the visualization and chat GPT made the visualization 
+To make a good and clear visualization with the map, we had to use folium 
+and write html
+we could not figure out how. 
+"""
 
 def add_legend(m):
     legend_html = """
@@ -147,7 +160,7 @@ def plot_trajectories(best_bee, best_dijkstra, great_circle, node_coords, out_ht
 
 def main():
     nodes, node_coords, graph, N_RINGS, N_ANGLES = build_graph()
-    plot_trajectories(best_solution_bee, best_solution_dijkstra, great_circle_trajectory, node_coords)
+    plot_trajectories(median_solution_bee_scenario_0, best_solution_dijkstra, great_circle_trajectory, node_coords)
 
 
 if __name__ == "__main__":

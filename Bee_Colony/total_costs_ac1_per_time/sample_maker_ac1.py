@@ -1,7 +1,13 @@
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
+"""
+this file makes a sample for ac 1 bee colony
+For every scenario, it calculates the median costs, median fuel burn, mean computation time, best costs, worst cost
+"""
 
+
+
+import pandas as pd
+
+#read all the csvs
 df = pd.read_csv('abc_costs_tstart_0.0.csv')
 df2 = pd.read_csv('abc_costs_tstart_1.0.csv')
 df3 = pd.read_csv('abc_costs_tstart_2.0.csv')
@@ -34,7 +40,7 @@ df29 = pd.read_csv('abc_costs_tstart_28.0.csv')
 df30 = pd.read_csv('abc_costs_tstart_29.0.csv')
 df31 = pd.read_csv('abc_costs_tstart_30.0.csv')
 
-
+#calculate all the median costs for every scenario
 median_ac_1_1 = float(df['total_cost_eur'].median())
 median_ac_1_2 = float(df2['total_cost_eur'].median())
 median_ac_1_3 = float(df3['total_cost_eur'].median())
@@ -67,7 +73,7 @@ median_ac_1_29 = float(df29['total_cost_eur'].median())
 median_ac_1_30 = float(df30['total_cost_eur'].median())
 median_ac_1_31 = float(df31['total_cost_eur'].median())
 
-
+#make a dictionary of all medians
 medians_ac1 = {
     "t_start_0.0": median_ac_1_1,
     "t_start_1.0": median_ac_1_2,
@@ -103,6 +109,7 @@ medians_ac1 = {
 }
 print(medians_ac1)
 
+#for every scenario, calculate average runtime for each run.
 avg_runtime_ac1_1 = float(df['runtime_sec'].mean())
 avg_runtime_ac1_2 = float(df2['runtime_sec'].mean())
 avg_runtime_ac1_3 = float(df3['runtime_sec'].mean())
@@ -135,6 +142,7 @@ avg_runtime_ac1_29 = float(df29['runtime_sec'].mean())
 avg_runtime_ac1_30 = float(df30['runtime_sec'].mean())
 avg_runtime_ac1_31 = float(df31['runtime_sec'].mean())
 
+#store at in a dictionary
 avg_runtimes_ac1 = {
     "t_start_0.0": avg_runtime_ac1_1,
     "t_start_1.0": avg_runtime_ac1_2,
@@ -171,6 +179,7 @@ avg_runtimes_ac1 = {
 
 print(avg_runtimes_ac1)
 
+#for every scenario, calculate best costs
 best_cost_ac1_1 = float(df['total_cost_eur'].min())
 best_cost_ac1_2 = float(df2['total_cost_eur'].min())
 best_cost_ac1_3 = float(df3['total_cost_eur'].min())
@@ -203,6 +212,7 @@ best_cost_ac1_29 = float(df29['total_cost_eur'].min())
 best_cost_ac1_30 = float(df30['total_cost_eur'].min())
 best_cost_ac1_31 = float(df31['total_cost_eur'].min())
 
+#store them in a dictionary
 best_costs_ac1 = {
     "t_start_0.0": best_cost_ac1_1,
     "t_start_1.0": best_cost_ac1_2,
@@ -238,6 +248,7 @@ best_costs_ac1 = {
 }
 print(best_costs_ac1)
 
+#for every scenario, determine the worst cost
 worst_cost_ac1_1 = float(df['total_cost_eur'].max())
 worst_cost_ac1_2 = float(df2['total_cost_eur'].max())
 worst_cost_ac1_3 = float(df3['total_cost_eur'].max())
@@ -270,6 +281,7 @@ worst_cost_ac1_29 = float(df29['total_cost_eur'].max())
 worst_cost_ac1_30 = float(df30['total_cost_eur'].max())
 worst_cost_ac1_31 = float(df31['total_cost_eur'].max())
 
+#put it in a dictionary
 worst_costs_ac1 = {
     "t_start_0.0": worst_cost_ac1_1,
     "t_start_1.0": worst_cost_ac1_2,
@@ -304,6 +316,9 @@ worst_costs_ac1 = {
     "t_start_30.0": worst_cost_ac1_31,
 }
 print(worst_costs_ac1)
+
+#for every scenario, determine the median fuel burn
+
 median_fuel_ac_1_1  = float(df['total_fuel_burn_kg'].median())
 median_fuel_ac_1_2  = float(df2['total_fuel_burn_kg'].median())
 median_fuel_ac_1_3  = float(df3['total_fuel_burn_kg'].median())
@@ -336,6 +351,7 @@ median_fuel_ac_1_29 = float(df29['total_fuel_burn_kg'].median())
 median_fuel_ac_1_30 = float(df30['total_fuel_burn_kg'].median())
 median_fuel_ac_1_31 = float(df31['total_fuel_burn_kg'].median())
 
+#put it in a dictionary
 medians_fuel_ac1 = {
     "t_start_0.0":  median_fuel_ac_1_1,
     "t_start_1.0":  median_fuel_ac_1_2,
@@ -377,7 +393,6 @@ sample_ac1 = pd.DataFrame({
     "best_cost_eur": best_costs_ac1,
     "worst_cost_eur": worst_costs_ac1,
     "median_fuel_burn_kg": medians_fuel_ac1,
-})
+}) #put all the dictionaries in one dataframe
 print(medians_fuel_ac1)
-sample_ac1.to_csv("sample_ac1.csv", index=True, index_label="t_start") #without the last statement, the column t start was named 'anonymus'
-print(sample_ac1.head())
+sample_ac1.to_csv("sample_ac1.csv", index=True, index_label="t_start") #without the last statement, the column t start was named 'anonymus'. export the sample
