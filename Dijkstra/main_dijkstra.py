@@ -8,7 +8,7 @@ parent_dir = os.path.dirname(current_dir)
 sys.path.append(parent_dir)
 
 from src.grid import generate_grid, build_adjacency_list
-from src.solver import solve_dynamic_dijkstra
+from src.solver_1 import solve_dynamic_dijkstra
 
 # Import Team Physics
 from Trajectory.Total_costs_edge import get_edge_cost
@@ -31,7 +31,7 @@ BASE_WIDTH_M = 40000.0
 # --- C. SOLVER SETTINGS ---
 INITIAL_WEIGHT_KG = 257743.0
 START_TIME_SEC = 0.0
-TIME_BIN_SEC = 100.0
+TIME_BIN_SEC = 1.0
 
 # --- D. TIME OF ARRIVAL (ToA) CONSTRAINTS ---
 # Set this to TRUE to enforce a strict arrival window
@@ -105,7 +105,7 @@ def main():
 
     t_start = time.time()
 
-    path, cost, _ = solve_dynamic_dijkstra(
+    path, cost, states_visited = solve_dynamic_dijkstra(
         adjacency_list=graph,
         node_coords=node_coords,
         start_node_id=0,
@@ -120,6 +120,7 @@ def main():
     t_end = time.time()
     runtime = t_end - t_start
     print(f"Computation Time: {runtime:.4f} seconds")
+    print(f"States visited: {states_visited}")
 
     # 4. SAVE RESULTS
     if path:

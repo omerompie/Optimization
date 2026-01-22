@@ -7,7 +7,7 @@ parent_dir = os.path.dirname(current_dir)
 sys.path.append(parent_dir)
 
 from src.grid import generate_grid, build_adjacency_list
-from src.solver import solve_dynamic_dijkstra
+from src.solver_1 import solve_dynamic_dijkstra
 from Trajectory.Total_costs_edge import get_edge_cost
 
 # ==========================================
@@ -16,7 +16,7 @@ from Trajectory.Total_costs_edge import get_edge_cost
 SCHIPHOL = (52.308056, 4.764167)
 JFK = (40.641766, -73.780968)
 
-N_RINGS = 8  # MATCHED with Brute Force
+N_RINGS = 8   # MATCHED with Brute Force
 N_ANGLES = 3  # MATCHED with Brute Force
 RING_SPACING_KM = 200.0
 MAX_WIDTH_KM = 500.0
@@ -54,9 +54,8 @@ def main():
     print("Running Dijkstra Solver...")
 
     # 2. Run Solver
-    # Note: We disable ToA Penalty here (target_time_sec=None) to match Brute Force's logic
-    # of finding the pure cheapest path.
-    path, cost = solve_dynamic_dijkstra(
+    # FIX: Added ", _" to unpack the 3rd return value (nodes_visited)
+    path, cost, _ = solve_dynamic_dijkstra(
         adjacency_list=graph,
         node_coords=node_coords,
         start_node_id=0,
@@ -65,16 +64,13 @@ def main():
         start_time_sec=START_TIME_SEC,
         physics_engine_fn=physics_adapter,
         time_bin_sec=100.0,
-        target_time_sec=None,  # Disabled for raw comparison
-        penalty_per_hour=0.0
+        target_time_range_sec=None
     )
 
     # 3. Report Results
     print("\n" + "=" * 40)
     print("       DIJKSTRA RESULTS       ")
     print("=" * 40)
-    # We don't have "total paths checked" in Dijkstra because it skips paths.
-    # Instead, we look at the Optimal Cost to verify it matches Brute Force.
     print(f"Optimal Total Cost:    €{cost:,.2f}")
     print(f"Optimal Path Nodes:    {path}")
     print("=" * 40 + "\n")
