@@ -11,7 +11,7 @@ from src.grid import generate_grid, build_adjacency_list
 from src.solver_1 import solve_dynamic_dijkstra
 
 # Import Team Physics
-from Trajectory.Total_costs_edge import get_edge_cost
+from Trajectory.edge_cost_aircraft1 import get_edge_cost
 
 # ==========================================
 #        GLOBAL CONFIGURATION
@@ -31,7 +31,7 @@ BASE_WIDTH_M = 40000.0
 # --- C. SOLVER SETTINGS ---
 INITIAL_WEIGHT_KG = 257743.0
 START_TIME_SEC = 0.0
-TIME_BIN_SEC = 1.0
+TIME_BIN_SEC = 100.0
 
 # --- D. TIME OF ARRIVAL (ToA) CONSTRAINTS ---
 # Set this to TRUE to enforce a strict arrival window
