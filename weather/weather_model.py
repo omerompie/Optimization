@@ -2,9 +2,11 @@ T_MAX = 39.0 #we have data for wind 39.0 hours after 1-13-2026 18.00 UTC.
 
 import pandas as pd
 import math
+from pathlib import Path
 
-
-df = pd.read_csv('wind_for_coordinates.csv') #read the wind data
+project_root = Path(__file__).resolve().parents[1]
+csv_path = project_root / 'weather' / 'wind_for_coordinates.csv' #again, this so that i dont have to copypaste CSVs later in other directories
+df = pd.read_csv(csv_path) #read the wind data
 
 """
 for interpolation by time, we have to make tables with time as rows and the coordinates as values for u and v wind

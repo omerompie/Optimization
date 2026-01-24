@@ -51,36 +51,6 @@ df_aircraft = df[(df["altitude"] == 34000) & (df["Mach"] == 0.82)]
 df_aircraft.to_csv("Aircraft_1_filtered.csv", index=False) #export the dataframe to be used in other python files
 
 
-"""
-The same steps are done below for aircraft two, so i'm not going to comment that again
-"""
-
-
-df_ac2 = pd.read_csv('Aircraft_2.txt') #because there were few datapoints for 34,000 ft, I manually edited the txt file so that pandas can read it directly.
-
-grouped1 = df_ac2.groupby("M")
-
-
-avg_fuel_flow1 = grouped1["FF"].mean()
-
-def tas_kmh1(Ma):
-    return Ma * math.sqrt(T_height * 287 * 1.4) * 3.6
-
-
-economics2 = avg_fuel_flow1.copy()
-for Ma in avg_fuel_flow1.index:
-    TAS = tas_kmh1(Ma)
-    FF = avg_fuel_flow1[Ma]
-    economics2[Ma] = TAS / FF
-#print(zuinigheid1.sort_values(ascending=False))
-
-"""
-M 0.81 turned out to be the most economic one. 
-"""
-
-df_aircraft2 = df_ac2[(df_ac2["M"] == 0.81)]
-
-df_aircraft2.to_csv('Aircraft_2_filtered.csv', index=False)
 
 
 

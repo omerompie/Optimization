@@ -10,6 +10,7 @@ from dataframe_filtering.determining_ff import get_fuel_flow
 import pandas as pd
 from src.ansp import get_ansp_cost_for_edge
 from weather.weather_model import get_wind_kmh
+from pathlib import Path
 
 """
 Our fixed variables are listed below
@@ -29,11 +30,15 @@ TIME_MIN = 7.0 #this is the time window for the aircraft. this is the minimum fl
 TIME_MAX_AC2 = 7.85 #this is the time window for the aircraft 2. this is the maximum flight time. it is later than for ac1 because ac 2 has a lower TAS
 TIME_MIN_AC2 = 7.35 #this is the time window for the aircraft 2. this is the minimum flight time
 
-df = pd.read_csv('wind_for_coordinates.csv') #read the dataframe of the wind. later used by the weather model
+project_root = Path(__file__).resolve().parents[1]  #to read a csv file from another directory
+
+csv_path = project_root / 'weather' / 'wind_for_coordinates.csv' #make the path
+
+wind = pd.read_csv(csv_path) #read the dataframe of the wind. later used by the weather model
 
 
-u_table = df.pivot(index='time_hours', columns='waypoint_id', values='u_speed_ms').sort_index() #make a table for the u wind on every hour. now, the time are the rows and the waypoint IDs are the columns
-v_table = df.pivot(index='time_hours', columns='waypoint_id', values='v_speed_ms').sort_index() #make a table for the v wind on every hour. now, the time are the rows and the waypoint IDs are the columns
+u_table = wind.pivot(index='time_hours', columns='waypoint_id', values='u_speed_ms').sort_index() #make a table for the u wind on every hour. now, the time are the rows and the waypoint IDs are the columns
+v_table = wind.pivot(index='time_hours', columns='waypoint_id', values='v_speed_ms').sort_index() #make a table for the v wind on every hour. now, the time are the rows and the waypoint IDs are the columns
 
 
 
@@ -43,10 +48,11 @@ v_table = df.pivot(index='time_hours', columns='waypoint_id', values='v_speed_ms
 """
 Below is uur aircraft Performance database with weight and fuel flow converted into a list
 """
+csv_path2 = project_root / 'dataframe_filtering' / 'Aircraft_1_filtered.csv' #make the path
+df = pd.read_csv(csv_path2)
 
-df = pd.read_csv('Aircraft_1_filtered.csv')
-weight_table = df["Gross_Weight"].tolist()
-ff_table = df["fuel_flow"].tolist() #create the tables again because the fuel flow function uses weight and fuel flow tables.
+weight_table = df['Gross_Weight'].tolist()
+ff_table = df['fuel_flow'].tolist() #create the tables again because the fuel flow function uses weight and fuel flow tables.
 
 
 
@@ -157,4 +163,3 @@ print(f'The total fuel burn on this edge is {fuel_burn_kg:.0f} kg')
 print(f'The total time for this edge is {time_h:.2f} hours')
 print(f'The total costs for this edge are {cost_eur:.0f} euros')
 """
-

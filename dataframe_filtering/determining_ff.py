@@ -1,13 +1,15 @@
 import pandas as pd
+from pathlib import Path
 
-df = pd.read_csv('Aircraft_1_filtered.csv')
-df2 = pd.read_csv('Aircraft_2_filtered.csv') #read the filtered csv files produced
+project_root = Path(__file__).resolve().parents[1]
+csv_path = project_root / 'dataframe_filtering' / 'Aircraft_1_filtered.csv' #this has been made so that I don't have to copypaste every csv file such as aircraft 1 filtered in every directory that uses it. with the conventional read csv and not copypasting the csv in other directories, it gives an error
+
+df = pd.read_csv(csv_path)
+
 
 weight_table = df["Gross_Weight"].tolist() # make a table for interpolation and extrapolation
 ff_table = df["fuel_flow"].tolist() #make a table for interpolation and extrapolation
 
-weight_table2 = df2['weight'].tolist() #the same for ac 2
-ff_table2 = df2['FF'].tolist()
 
 def get_fuel_flow(weight, weight_table, ff_table): #make a function which calculates fuel flow by the interpolation by weights
 

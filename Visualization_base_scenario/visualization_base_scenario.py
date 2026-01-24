@@ -8,9 +8,10 @@ import folium
 from graph_build_for_bee.build_graph_function import build_graph
 
 
-median_solution_bee_scenario_0 = [0, 18, 40, 60, 80, 101, 122, 142, 163, 184, 205, 226, 247, 268, 289, 311, 332, 353, 374, 395, 416, 437, 457, 478, 499, 520, 541, 562, 583, 603, 610]
+base_solution_bee_scenario_0 = [0, 18, 40, 60, 80, 101, 122, 142, 163, 184, 205, 226, 247, 268, 289, 311, 332, 353, 374, 395, 416, 437, 457, 478, 499, 520, 541, 562, 583, 603, 610]
 
-best_solution_dijkstra = [0,
+best_solution_dijkstra = [
+0,
 21,
 41,
 61,
@@ -40,7 +41,7 @@ best_solution_dijkstra = [0,
 561,
 582,
 604,
-610,
+610
 ]
 
 great_circle_trajectory = [0, 11, 32, 53, 74, 95, 116, 137, 158, 179, 200, 221, 242, 263, 284, 305, 326, 347, 368, 389, 410, 431, 452, 473, 494, 515, 536, 557, 578, 610]
@@ -160,7 +161,7 @@ def plot_trajectories(best_bee, best_dijkstra, great_circle, node_coords, out_ht
 
 def main():
     nodes, node_coords, graph, N_RINGS, N_ANGLES = build_graph()
-    plot_trajectories(median_solution_bee_scenario_0, best_solution_dijkstra, great_circle_trajectory, node_coords)
+    plot_trajectories(base_solution_bee_scenario_0, best_solution_dijkstra, great_circle_trajectory, node_coords)
 
 
 if __name__ == "__main__":
