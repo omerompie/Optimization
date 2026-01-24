@@ -4,8 +4,8 @@ This is the base file in which we are going to test it before putting it into a 
 scenarios.
 """
 
-POPULATION_SIZE = 50
-MAX_ITERATIONS = 150
+POPULATION_SIZE = 10
+MAX_ITERATIONS = 50
 LIMIT = 20
 TEMPERATURE_HEIGHT = 288.15 - ((34000 * 0.3048) * 0.0065) #temperature at our fixed flight altitude of 34,0000 feet
 COST_OF_TIME_INDEX = 35 #associated operating costs, expressed in kg fuel burn per hour

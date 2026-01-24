@@ -4,7 +4,7 @@ First all the individual steps will be computed into a function.
 Then, the function get edge costs combines all this to determine the cost of an edge
 """
 
-from vinc.vinc import v_direct
+from src.vinc import v_direct
 import math
 from dataframe_filtering.determining_ff import get_fuel_flow
 import pandas as pd
