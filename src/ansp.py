@@ -1,22 +1,15 @@
 from typing import Tuple
 from .vinc import v_direct
 
+# For readability purposes and not to confuse
 Coord = Tuple[float, float]  # (lat, lon)
-
-def _in_box(lat: float, lon: float,
-            lat_min: float, lat_max: float,
-            lon_min: float, lon_max: float) -> bool:
-    return (lat_min <= lat <= lat_max) and (lon_min <= lon <= lon_max)
-
 
 def _get_region(lat: float, lon: float) -> str:
     """
-    Determines the ANSP region based on Lat/Lon.
-    Prioritizes specific regions (UK/IRE) before broad ocean/continent bands.
+    The ANSP region based on Lat/Lon.
     """
 
-    # 1. UK / Ireland (more specific box)
-    # Rough bounds: 48N–60N, longitudes -12W to +2E
+    # 1. UK / Ireland
     if 48.0 <= lat <= 60.0 and -12.0 <= lon <= 2.0:
         return "UK_IRE"
 
@@ -35,8 +28,7 @@ def _get_region(lat: float, lon: float) -> str:
 
 def _get_rate_eur_per_km(region: str) -> float:
     """
-    Effective en-route ANSP cost per km for a heavy long-haul aircraft (~250 t).
-    Approximate, derived from public unit rates.
+    ANSP cost per km for a approximately heavy long-haul aircraft
     """
     if region == "UK_IRE":
         return 0.9   # €/km

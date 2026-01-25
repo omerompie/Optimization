@@ -1,7 +1,7 @@
 import math
 from typing import Dict, List, Tuple, Callable
 from collections import defaultdict
-from .vinc import v_direct, v_inverse
+from src.vinc import v_direct, v_inverse
 
 # --- TYPE DEFINITIONS ---
 NodeCoords = Dict[int, Tuple[float, float]]

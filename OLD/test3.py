@@ -5,7 +5,7 @@ import os
 current_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(current_dir)
 
-from src.test import generate_grid
+from OLD.test import generate_grid
 
 # ==========================================
 #        GRID CONFIGURATION

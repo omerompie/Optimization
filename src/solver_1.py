@@ -14,71 +14,73 @@ def solve_dynamic_dijkstra(
         target_time_range_sec=None
 ):
     """
-    Finds the optimal flight path using a constrained Dijkstra search.
+    this is the modified Dijkstra algorithm.
 
-    This uses an implicit graph approach: states are expanded dynamically.
-    To ensure efficiency, we use Pareto Pruning (keeping only the best states
+    Implicit graph approach: states are expanded dynamically.
+    For Efficiency, we use Pareto Pruning (keeping only the best states
     per time-bin) rather than visiting every possible permutation.
 
-    Returns:
-        Tuple: (List of Node IDs in path, Total Cost, Total States Visited)
+    Returns: List of Node IDs in path, Total Cost, Total States Visited)
     """
 
-    # --- CONSTANTS ---
-    # The weight of the aircraft when empty (Zero Fuel Weight).
-    # If current_weight drops below this, we have run out of fuel.
+    # Constants
+    # Zero Fuel Weight
+    # If the aircraft weight drops below this, it means we ran out of fuel.
     MIN_DRY_WEIGHT_KG = 160000.0
 
-    # --- 1. INITIALIZATION ---
+    # 1. Initialization
 
-    # Priority Queue: The "To-Do" list, sorted by lowest Cost.
-    # Structure: (Total Cost, Node ID, Current Time, Current Weight)
+    # Priority queue for Dijkstra search.
+    # Each entry represents a "state" of the aircraft.
+    # Stored as: (total_cost, current_node, current_time_seconds, current_weight_kg)
     priority_queue = []
     heapq.heappush(priority_queue, (0.0, start_node_id, start_time_sec, initial_weight_kg))
 
-    # Pruning Storage ('best_states'):
-    # Key: (Node ID, Time Bin) -> Value: List of [Cost, Weight] pairs.
+    # Dictionary used for Pareto pruning.
+    # Key: (node_id, discretized_time_bin)
     # Used to discard paths that are strictly worse than ones we've already found.
     best_states = {}
 
-    # Path Reconstruction ('came_from'):
-    # Maps a State -> Previous State, allowing us to backtrack the path at the end.
+    # Dictionary used to reconstruct the final path.
+    # Each state maps to the state that led to it.
     came_from = {}
     came_from[(start_node_id, start_time_sec, initial_weight_kg)] = None
 
+    # Counter to track how many states were explored
     nodes_visited = 0
-    print(f"Starting Search... (Start Time: {start_time_sec / 3600:.2f}h)")
+    print(f"Starting Search (Start Time: {start_time_sec / 3600:.2f}h)")
 
+    # Open a file to gather the visited nodes
     with open("search_history.txt", "w") as history_file:
 
-        # --- 2. MAIN LOOP ---
+        # 2. The main loop
+        # Continue until there are no more states to explore
         while priority_queue:
             # Pop the state with the lowest cost
             current_cost, u, current_time, current_weight = heapq.heappop(priority_queue)
             nodes_visited += 1
+            # Log the visited node
             history_file.write(f"{u}\n")
 
-            # --- A. GOAL CHECK (Did we reach JFK?) ---
+            # A - checking if we reached the goal
             if u == end_node_id:
 
-                # Check Time Window (Hard Constraint)
+                # If a ToA is active, enforce it
                 if target_time_range_sec:
                     min_arrival, max_arrival = target_time_range_sec
                     # If we arrived too early, we discard this path and keep searching
-                    # for a slower (and likely cheaper) one in the queue.
                     if current_time < min_arrival:
                         continue
 
                         # Success! Print report and return.
                 fuel_burned = initial_weight_kg - current_weight
-                print("-" * 40)
-                print(f"PATH FOUND! (Explored {nodes_visited} states)")
-                print("-" * 40)
-                print(f"Arrival Time:   {current_time / 3600.0:.4f} hours")
+                print(f"Path found (searched {nodes_visited} states)")
+                print(f"Arrival Time:   {current_time / 3600.0:.3f} hours")
                 print(f"Total Cost:     €{current_cost:.2f}")
                 print(f"Total Fuel:     {fuel_burned:.0f} kg")
                 print("-" * 40)
 
+                # Reconstruct and return the path
                 final_state = (u, current_time, current_weight)
                 path = reconstruct_path(came_from, final_state)
                 return path, current_cost, nodes_visited
@@ -88,6 +90,7 @@ def solve_dynamic_dijkstra(
             t_bin = int(current_time / time_bin_sec)
             state_key = (u, t_bin)
 
+            # Initialize the Pareto list if this state hasn't been visited before
             if state_key not in best_states:
                 best_states[state_key] = []
 
@@ -100,28 +103,32 @@ def solve_dynamic_dijkstra(
                     is_dominated = True
                     break
 
+            # If it is worse, just discard this state
             if is_dominated:
                 continue
 
-                # Update the Pareto Frontier:
+                # Update
             # Add the current state, and remove any old states that are now dominated by this one.
             new_list = []
             for (exist_cost, exist_weight) in best_states[state_key]:
                 if not (current_cost <= exist_cost and current_weight >= exist_weight):
                     new_list.append((exist_cost, exist_weight))
 
+            # Add the current state
             new_list.append((current_cost, current_weight))
             best_states[state_key] = new_list
 
-            # --- C. EXPAND NEIGHBORS (Next Steps) ---
+            # C - Look at the neighbors of this node
             if u not in adjacency_list:
                 continue
 
+            # Loop over all neighboring nodes
             for neighbor_info in adjacency_list[u]:
-                v = neighbor_info[0] if isinstance(neighbor_info, tuple) else neighbor_info
+                #get the tuple of the neighbor
+                v = neighbor_info[0]
 
                 # 1. Physics Engine Calculation
-                # Calculate cost/fuel/time to fly from U to V
+                # Compute fuel burn, flight time, and cost for this segment
                 fuel_burn, segment_time_h, segment_cost = physics_engine_fn(
                     u_id=u,
                     waypoint_i=node_coords[u],
@@ -130,30 +137,33 @@ def solve_dynamic_dijkstra(
                     current_time=(current_time / 3600.0)
                 )
 
+                # Update cumulative values
                 new_cost = current_cost + segment_cost
                 new_weight = current_weight - fuel_burn
                 new_time = current_time + (segment_time_h * 3600.0)
 
                 # 2. Safety Check: Out of Fuel?
-                # We crash if weight drops below the empty aircraft weight.
+                # Discard paths that run out of fuel
                 if new_weight < MIN_DRY_WEIGHT_KG:
                     continue
 
-                    # 3. Constraint Check: Too Late?
-                # Stop exploring if we have already exceeded the latest arrival time.
+                # 3. Constraint Check: Too Late?
+                # Discard paths that arrive too late
                 if target_time_range_sec:
                     _, max_arrival = target_time_range_sec
                     if new_time > max_arrival:
                         continue
 
-                        # 4. Add valid neighbor to Queue
+                # 4. Add valid neighbor to Queue
                 new_state_id = (v, new_time, new_weight)
                 current_state_id = (u, current_time, current_weight)
                 came_from[new_state_id] = current_state_id
 
+                # Push the new state into the priority queue
                 heapq.heappush(priority_queue, (new_cost, v, new_time, new_weight))
 
-    print(f"Optimization Failed. Visited {nodes_visited} states.")
+    # If the queue empties, no valid path was found
+    print(f"Failed. Visited {nodes_visited} states.")
     return [], 0.0, nodes_visited
 
 
@@ -163,8 +173,10 @@ def reconstruct_path(came_from, final_state):
     """
     path = []
     curr = final_state
+    # Follow the chain of states backwards
     while curr:
         node_id = curr[0]
         path.append(node_id)
         curr = came_from.get(curr)
+    # Reverse the path to get start → end
     return path[::-1]

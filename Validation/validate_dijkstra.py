@@ -1,7 +1,7 @@
 import sys
 import os
 
-# --- PATH SETUP ---
+
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
 sys.path.append(parent_dir)
@@ -10,24 +10,18 @@ from src.grid import generate_grid, build_adjacency_list
 from src.solver_1 import solve_dynamic_dijkstra
 from Trajectory.edge_cost_aircraft1 import get_edge_cost
 
-# ==========================================
-#      1. CONFIGURATION (MUST MATCH BRUTE FORCE)
-# ==========================================
+
 SCHIPHOL = (52.308056, 4.764167)
 JFK = (40.641766, -73.780968)
 
-N_RINGS = 8   # MATCHED with Brute Force
-N_ANGLES = 3  # MATCHED with Brute Force
+N_RINGS = 8
+N_ANGLES = 3
 RING_SPACING_KM = 200.0
 MAX_WIDTH_KM = 500.0
 BASE_WIDTH_M = 40000.0
 INITIAL_WEIGHT_KG = 257743.0
 START_TIME_SEC = 0.0
 
-
-# ==========================================
-#      2. PHYSICS ADAPTER
-# ==========================================
 def physics_adapter(u_id, waypoint_i, waypoint_j, current_weight_kg, current_time):
     return get_edge_cost(
         waypoint_i=waypoint_i,
@@ -37,10 +31,7 @@ def physics_adapter(u_id, waypoint_i, waypoint_j, current_weight_kg, current_tim
         current_time=current_time
     )
 
-
-# ==========================================
-#      3. MAIN EXECUTION
-# ==========================================
+# Main
 def main():
     print(f"\n--- DIJKSTRA VALIDATION (MICRO-WORLD) ---")
     print(f"Grid Settings: {N_RINGS} Rings x {N_ANGLES} Angles")
@@ -54,7 +45,6 @@ def main():
     print("Running Dijkstra Solver...")
 
     # 2. Run Solver
-    # FIX: Added ", _" to unpack the 3rd return value (nodes_visited)
     path, cost, _ = solve_dynamic_dijkstra(
         adjacency_list=graph,
         node_coords=node_coords,
@@ -69,10 +59,9 @@ def main():
 
     # 3. Report Results
     print("\n" + "=" * 40)
-    print("       DIJKSTRA RESULTS       ")
-    print("=" * 40)
-    print(f"Optimal Total Cost:    €{cost:,.2f}")
-    print(f"Optimal Path Nodes:    {path}")
+    print("DIJKSTRA RESULTS")
+    print(f"Optimal Total Cost: €{cost:,.2f}")
+    print(f"Optimal Path Nodes: {path}")
     print("=" * 40 + "\n")
 
 
